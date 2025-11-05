@@ -1,0 +1,20 @@
+{
+  "name": "SupremeHuaji/MoonClmech",
+  "version": "0.1.0",
+  "readme": "README.mbt.md",
+  "repository": "",
+  "license": "Apache-2.0",
+  "keywords": [
+    "classical-mechanics",
+    "physics",
+    "dynamics",
+    "kinematics",
+    "lagrange",
+    "hamilton",
+    "rigid-body",
+    "multibody",
+    "oscillation",
+    "collision"
+  ],
+  "description": "MoonClmech - A comprehensive classical mechanics calculation library for MoonBit, inspired by SymPy Mechanics. Provides computational functions for particle dynamics, rigid body mechanics, Lagrangian and Hamiltonian formulations, constraint systems, multibody dynamics, and kinematic analysis. Suitable for modeling physical systems, robotics, and engineering applications."
+}
