@@ -752,3 +752,1072 @@ test "relationship checks - angular motion" {
   let ke_rot = rotational_kinetic_energy(i, omega)
   assert_eq(ke_rot, 160.0)
 }
+
+// ============================================================================
+// 12. 圆周运动测试（Circular Motion）
+// ============================================================================
+
+///|
+test "centripetal_acceleration - basic calculation" {
+  // 线速度 10 m/s，半径 5 m
+  // 向心加速度 = 10²/5 = 100/5 = 20 m/s²
+  let result = centripetal_acceleration(10.0, 5.0)
+  assert_eq(result, 20.0)
+}
+
+///|
+test "centripetal_acceleration_angular - basic calculation" {
+  // 角速度 2 rad/s，半径 5 m
+  // 向心加速度 = 2²*5 = 4*5 = 20 m/s²
+  let result = centripetal_acceleration_angular(2.0, 5.0)
+  assert_eq(result, 20.0)
+}
+
+///|
+test "centripetal_force - basic calculation" {
+  // 质量 2 kg，线速度 10 m/s，半径 5 m
+  // 向心力 = 2*10²/5 = 2*20 = 40 N
+  let result = centripetal_force(2.0, 10.0, 5.0)
+  assert_eq(result, 40.0)
+}
+
+///|
+test "centripetal_force_angular - basic calculation" {
+  // 质量 2 kg，角速度 2 rad/s，半径 5 m
+  // 向心力 = 2*2²*5 = 2*20 = 40 N
+  let result = centripetal_force_angular(2.0, 2.0, 5.0)
+  assert_eq(result, 40.0)
+}
+
+///|
+test "linear_velocity_from_angular - basic calculation" {
+  // 角速度 5 rad/s，半径 2 m
+  // 线速度 = 5*2 = 10 m/s
+  let result = linear_velocity_from_angular(5.0, 2.0)
+  assert_eq(result, 10.0)
+}
+
+///|
+test "angular_velocity_from_linear - basic calculation" {
+  // 线速度 10 m/s，半径 2 m
+  // 角速度 = 10/2 = 5 rad/s
+  let result = angular_velocity_from_linear(10.0, 2.0)
+  assert_eq(result, 5.0)
+}
+
+///|
+test "circular_motion_period - basic calculation" {
+  // 角速度 2π rad/s，周期 = 2π/(2π) = 1 s
+  let omega = 2.0 * 3.141592653589793
+  let result = circular_motion_period(omega)
+  assert_eq((result - 1.0).abs() < 0.01, true)
+}
+
+///|
+test "circular_motion_frequency - basic calculation" {
+  // 角速度 2π rad/s，频率 = (2π)/(2π) = 1 Hz
+  let omega = 2.0 * 3.141592653589793
+  let result = circular_motion_frequency(omega)
+  assert_eq((result - 1.0).abs() < 0.01, true)
+}
+
+// ============================================================================
+// 13. 摩擦力测试（Friction）
+// ============================================================================
+
+///|
+test "static_friction - basic calculation" {
+  // 静摩擦系数 0.5，正压力 100 N
+  // 最大静摩擦力 = 0.5*100 = 50 N
+  let result = static_friction(0.5, 100.0)
+  assert_eq(result, 50.0)
+}
+
+///|
+test "kinetic_friction - basic calculation" {
+  // 动摩擦系数 0.3，正压力 100 N
+  // 动摩擦力 = 0.3*100 = 30 N
+  let result = kinetic_friction(0.3, 100.0)
+  assert_eq(result, 30.0)
+}
+
+///|
+test "normal_force_inclined_plane - basic calculation" {
+  // 质量 10 kg，重力加速度 9.8 m/s²，角度 30°
+  // 正压力 = 10*9.8*cos(30°) ≈ 84.87 N
+  let angle = 3.141592653589793 / 6.0
+  let result = normal_force_inclined_plane(10.0, 9.8, angle)
+  assert_eq((result - 84.87).abs() < 0.1, true)
+}
+
+///|
+test "gravity_component_along_incline - basic calculation" {
+  // 质量 10 kg，重力加速度 9.8 m/s²，角度 30°
+  // 重力分量 = 10*9.8*sin(30°) = 49 N
+  let angle = 3.141592653589793 / 6.0
+  let result = gravity_component_along_incline(10.0, 9.8, angle)
+  assert_eq((result - 49.0).abs() < 0.1, true)
+}
+
+///|
+test "acceleration_inclined_plane_no_friction - basic calculation" {
+  // 重力加速度 9.8 m/s²，角度 30°
+  // 加速度 = 9.8*sin(30°) = 4.9 m/s²
+  let angle = 3.141592653589793 / 6.0
+  let result = acceleration_inclined_plane_no_friction(9.8, angle)
+  assert_eq((result - 4.9).abs() < 0.1, true)
+}
+
+///|
+test "acceleration_inclined_plane_with_friction - basic calculation" {
+  // 重力加速度 9.8 m/s²，角度 30°，动摩擦系数 0.2
+  // 加速度 = 9.8*(sin(30°) - 0.2*cos(30°)) ≈ 3.20 m/s²
+  let angle = 3.141592653589793 / 6.0
+  let result = acceleration_inclined_plane_with_friction(9.8, angle, 0.2)
+  assert_eq((result - 3.20).abs() < 0.1, true)
+}
+
+// ============================================================================
+// 14. 功和功率测试（Work and Power）
+// ============================================================================
+
+///|
+test "work - parallel force" {
+  // 力 10 N，位移 5 m，角度 0°（同向）
+  // 功 = 10*5*cos(0) = 50 J
+  let result = work(10.0, 5.0, 0.0)
+  assert_eq((result - 50.0).abs() < 0.0001, true)
+}
+
+///|
+test "work - perpendicular force" {
+  // 力 10 N，位移 5 m，角度 90°（垂直）
+  // 功 = 10*5*cos(90°) = 0 J
+  let angle = 3.141592653589793 / 2.0
+  let result = work(10.0, 5.0, angle)
+  assert_eq((result - 0.0).abs() < 0.0001, true)
+}
+
+///|
+test "work_parallel - basic calculation" {
+  // 力 10 N，位移 5 m，功 = 50 J
+  let result = work_parallel(10.0, 5.0)
+  assert_eq(result, 50.0)
+}
+
+///|
+test "power - basic calculation" {
+  // 功 100 J，时间 5 s，功率 = 20 W
+  let result = power(100.0, 5.0)
+  assert_eq(result, 20.0)
+}
+
+///|
+test "power_from_force - parallel" {
+  // 力 10 N，速度 5 m/s，角度 0°
+  // 功率 = 10*5*cos(0) = 50 W
+  let result = power_from_force(10.0, 5.0, 0.0)
+  assert_eq((result - 50.0).abs() < 0.0001, true)
+}
+
+///|
+test "power_from_force_parallel - basic calculation" {
+  // 力 10 N，速度 5 m/s，功率 = 50 W
+  let result = power_from_force_parallel(10.0, 5.0)
+  assert_eq(result, 50.0)
+}
+
+///|
+test "work_from_kinetic_energy - basic calculation" {
+  // 末动能 100 J，初动能 50 J
+  // 功 = 100 - 50 = 50 J
+  let result = work_from_kinetic_energy(100.0, 50.0)
+  assert_eq(result, 50.0)
+}
+
+// ============================================================================
+// 15. 更多转动惯量测试（Additional Moments of Inertia）
+// ============================================================================
+
+///|
+test "moment_of_inertia_cylinder_axis - basic calculation" {
+  // 质量 4 kg，半径 2 m，转动惯量 = 0.5*4*4 = 8 kg·m²
+  let result = moment_of_inertia_cylinder_axis(4.0, 2.0)
+  assert_eq(result, 8.0)
+}
+
+///|
+test "moment_of_inertia_cylinder_diameter - basic calculation" {
+  // 质量 6 kg，半径 1 m，高度 2 m
+  // 转动惯量 = 6*(1/4 + 4/12) = 6*(0.25 + 0.333) = 3.5 kg·m²
+  let result = moment_of_inertia_cylinder_diameter(6.0, 1.0, 2.0)
+  assert_eq((result - 3.5).abs() < 0.1, true)
+}
+
+///|
+test "moment_of_inertia_cone_axis - basic calculation" {
+  // 质量 3 kg，半径 2 m，转动惯量 = 0.3*3*4 = 3.6 kg·m²
+  let result = moment_of_inertia_cone_axis(3.0, 2.0)
+  assert_eq((result - 3.6).abs() < 0.1, true)
+}
+
+///|
+test "moment_of_inertia_rectangular_plate - basic calculation" {
+  // 质量 12 kg，长度 4 m，宽度 3 m
+  // 转动惯量 = 12*(16+9)/12 = 12*25/12 = 25 kg·m²
+  let result = moment_of_inertia_rectangular_plate(12.0, 4.0, 3.0)
+  assert_eq(result, 25.0)
+}
+
+///|
+test "moment_of_inertia_rectangular_plate_edge - basic calculation" {
+  // 质量 6 kg，宽度 2 m，转动惯量 = 6*4/3 = 8 kg·m²
+  let result = moment_of_inertia_rectangular_plate_edge(6.0, 2.0)
+  assert_eq(result, 8.0)
+}
+
+// ============================================================================
+// 16. 刚体平衡测试（Rigid Body Equilibrium）
+// ============================================================================
+
+///|
+test "lever_equilibrium - balanced" {
+  // 力1=10 N，力臂1=2 m，力2=20 N，力臂2=1 m
+  // 力矩平衡：10*2 = 20*1 = 20 N·m
+  let result = lever_equilibrium(10.0, 2.0, 20.0, 1.0)
+  assert_eq(result, true)
+}
+
+///|
+test "lever_equilibrium_force - basic calculation" {
+  // 力1=10 N，力臂1=2 m，力臂2=1 m
+  // 平衡所需的力2 = 10*2/1 = 20 N
+  let result = lever_equilibrium_force(10.0, 2.0, 1.0)
+  assert_eq(result, 20.0)
+}
+
+///|
+test "net_force_1d - basic calculation" {
+  // 力数组 [10, -5, 3]
+  // 合力 = 10 - 5 + 3 = 8 N
+  let forces = [10.0, -5.0, 3.0]
+  let result = net_force_1d(forces)
+  assert_eq(result, 8.0)
+}
+
+///|
+test "net_torque - basic calculation" {
+  // 力矩数组 [10, -5, 3]
+  // 合力矩 = 10 - 5 + 3 = 8 N·m
+  let torques = [10.0, -5.0, 3.0]
+  let result = net_torque(torques)
+  assert_eq(result, 8.0)
+}
+
+// ============================================================================
+// 17. 相对运动测试（Relative Motion）
+// ============================================================================
+
+///|
+test "relative_velocity_1d - basic calculation" {
+  // 物体1速度 5 m/s，物体2速度 10 m/s
+  // 物体2相对于物体1的速度 = 10 - 5 = 5 m/s
+  let result = relative_velocity_1d(5.0, 10.0)
+  assert_eq(result, 5.0)
+}
+
+///|
+test "relative_displacement_1d - basic calculation" {
+  // 物体1位置 0 m，物体2位置 5 m
+  // 物体2相对于物体1的位移 = 5 - 0 = 5 m
+  let result = relative_displacement_1d(0.0, 5.0)
+  assert_eq(result, 5.0)
+}
+
+///|
+test "relative_acceleration_1d - basic calculation" {
+  // 物体1加速度 2 m/s²，物体2加速度 5 m/s²
+  // 物体2相对于物体1的加速度 = 5 - 2 = 3 m/s²
+  let result = relative_acceleration_1d(2.0, 5.0)
+  assert_eq(result, 3.0)
+}
+
+// ============================================================================
+// 18. 流体力学基础测试（Fluid Mechanics Basics）
+// ============================================================================
+
+///|
+test "buoyant_force - basic calculation" {
+  // 流体密度 1000 kg/m³，排开体积 0.1 m³，重力加速度 9.8 m/s²
+  // 浮力 = 1000*0.1*9.8 = 980 N
+  let result = buoyant_force(1000.0, 0.1, 9.8)
+  assert_eq((result - 980.0).abs() < 0.0001, true)
+}
+
+///|
+test "hydrostatic_pressure - basic calculation" {
+  // 流体密度 1000 kg/m³，深度 10 m，重力加速度 9.8 m/s²，表面压力 101325 Pa
+  // 静压力 = 101325 + 1000*9.8*10 = 101325 + 98000 = 199325 Pa
+  let result = hydrostatic_pressure(1000.0, 10.0, 9.8, 101325.0)
+  assert_eq(result, 199325.0)
+}
+
+///|
+test "bernoulli_velocity - basic calculation" {
+  // 压力1=200000 Pa，压力2=150000 Pa，密度=1000 kg/m³，速度1=5 m/s
+  // 速度2 = sqrt(25 + 2*50000/1000) = sqrt(125) ≈ 11.18 m/s
+  let result = bernoulli_velocity(200000.0, 150000.0, 1000.0, 5.0)
+  assert_eq((result - 11.18).abs() < 0.1, true)
+}
+
+///|
+test "bernoulli_pressure - basic calculation" {
+  // 压力1=200000 Pa，密度=1000 kg/m³，速度1=10 m/s，速度2=5 m/s
+  // 压力2 = 200000 + 0.5*1000*(100-25) = 200000 + 37500 = 237500 Pa
+  let result = bernoulli_pressure(200000.0, 1000.0, 10.0, 5.0)
+  assert_eq(result, 237500.0)
+}
+
+///|
+test "continuity_equation_velocity - basic calculation" {
+  // 面积1=0.1 m²，速度1=5 m/s，面积2=0.05 m²
+  // 速度2 = 0.1*5/0.05 = 10 m/s
+  let result = continuity_equation_velocity(0.1, 5.0, 0.05)
+  assert_eq(result, 10.0)
+}
+
+// ============================================================================
+// 19. 能量守恒应用测试（Energy Conservation Applications）
+// ============================================================================
+
+///|
+test "velocity_from_energy_conservation - basic calculation" {
+  // 初动能 100 J，初势能 50 J，末势能 100 J，质量 2 kg
+  // 末动能 = 100 + 50 - 100 = 50 J
+  // 末速度 = sqrt(2*50/2) = sqrt(50) ≈ 7.07 m/s
+  let result = velocity_from_energy_conservation(100.0, 50.0, 100.0, 2.0)
+  assert_eq((result - 7.07).abs() < 0.1, true)
+}
+
+///|
+test "max_height_from_energy - basic calculation" {
+  // 初速度 20 m/s，初始高度 0 m，重力加速度 9.8 m/s²
+  // 最大高度 = 0 + 400/(2*9.8) ≈ 20.41 m
+  let result = max_height_from_energy(20.0, 0.0, 9.8)
+  assert_eq((result - 20.41).abs() < 0.1, true)
+}
+
+///|
+test "velocity_from_spring_energy - basic calculation" {
+  // 弹簧常数 100 N/m，压缩量 0.5 m，质量 2 kg
+  // 弹性势能 = 0.5*100*0.25 = 12.5 J
+  // 速度 = sqrt(2*12.5/2) = sqrt(12.5) ≈ 3.54 m/s
+  let result = velocity_from_spring_energy(100.0, 0.5, 2.0)
+  assert_eq((result - 3.54).abs() < 0.1, true)
+}
+
+// ============================================================================
+// 20. 角动量守恒测试（Angular Momentum Conservation）
+// ============================================================================
+
+///|
+test "angular_velocity_from_conservation - basic calculation" {
+  // 初转动惯量 10 kg·m²，初角速度 5 rad/s，末转动惯量 5 kg·m²
+  // 末角速度 = 10*5/5 = 10 rad/s
+  let result = angular_velocity_from_conservation(10.0, 5.0, 5.0)
+  assert_eq(result, 10.0)
+}
+
+///|
+test "moment_of_inertia_from_conservation - basic calculation" {
+  // 初转动惯量 10 kg·m²，初角速度 5 rad/s，末角速度 10 rad/s
+  // 末转动惯量 = 10*5/10 = 5 kg·m²
+  let result = moment_of_inertia_from_conservation(10.0, 5.0, 10.0)
+  assert_eq(result, 5.0)
+}
+
+// ============================================================================
+// 21. 受迫振动和共振测试（Forced Oscillations and Resonance）
+// ============================================================================
+
+///|
+test "forced_oscillation_amplitude - basic calculation" {
+  // 驱动力幅值 10 N，质量 2 kg，固有角频率 5 rad/s，驱动角频率 4 rad/s，阻尼系数 1 s⁻¹
+  // 振幅计算（简化验证）
+  let result = forced_oscillation_amplitude(10.0, 2.0, 5.0, 4.0, 1.0)
+  assert_eq(result > 0.0, true)
+}
+
+///|
+test "resonance_frequency - basic calculation" {
+  // 固有角频率 5 rad/s，共振频率 = 5 rad/s
+  let result = resonance_frequency(5.0)
+  assert_eq(result, 5.0)
+}
+
+///|
+test "resonance_frequency_damped - basic calculation" {
+  // 固有角频率 5 rad/s，阻尼系数 3 s⁻¹
+  // 共振频率 = sqrt(25 - 9) = sqrt(16) = 4 rad/s
+  let result = resonance_frequency_damped(5.0, 3.0)
+  assert_eq((result - 4.0).abs() < 0.0001, true)
+}
+
+///|
+test "normal_frequency_antisymmetric - basic calculation" {
+  // 固有角频率 5 rad/s，耦合常数 10，质量 2 kg
+  // 反对称模式频率 = sqrt(25 + 2*10/2) = sqrt(35) ≈ 5.92 rad/s
+  let result = normal_frequency_antisymmetric(5.0, 10.0, 2.0)
+  assert_eq((result - 5.92).abs() < 0.1, true)
+}
+
+// ============================================================================
+// 23. 质心运动定理测试（Center of Mass Motion）
+// ============================================================================
+
+///|
+test "center_of_mass_velocity_1d - basic calculation" {
+  // 质量数组 [2, 3]，速度数组 [5, 10]
+  // 质心速度 = (2*5 + 3*10)/(2+3) = 40/5 = 8 m/s
+  let masses = [2.0, 3.0]
+  let velocities = [5.0, 10.0]
+  let result = center_of_mass_velocity_1d(masses, velocities)
+  assert_eq(result, 8.0)
+}
+
+///|
+test "center_of_mass_acceleration_1d - basic calculation" {
+  // 质量数组 [2, 3]，加速度数组 [4, 6]
+  // 质心加速度 = (2*4 + 3*6)/(2+3) = 26/5 = 5.2 m/s²
+  let masses = [2.0, 3.0]
+  let accelerations = [4.0, 6.0]
+  let result = center_of_mass_acceleration_1d(masses, accelerations)
+  assert_eq((result - 5.2).abs() < 0.01, true)
+}
+
+// ============================================================================
+// 24. 碰撞的动能损失测试（Kinetic Energy Loss in Collisions）
+// ============================================================================
+
+///|
+test "kinetic_energy_loss_inelastic - basic calculation" {
+  // m1=2 kg, v1=10 m/s, m2=3 kg, v2=0 m/s
+  // 初动能 = 0.5*2*100 + 0 = 100 J
+  // 末速度 = (2*10 + 3*0)/5 = 4 m/s
+  // 末动能 = 0.5*5*16 = 40 J
+  // 动能损失 = 100 - 40 = 60 J
+  let result = kinetic_energy_loss_inelastic(2.0, 10.0, 3.0, 0.0)
+  assert_eq((result - 60.0).abs() < 0.1, true)
+}
+
+///|
+test "kinetic_energy_loss_partial - basic calculation" {
+  // m1=1 kg, v1=10 m/s, m2=1 kg, v2=0 m/s, 恢复系数 0.5
+  // 动能损失应该大于0（验证非弹性碰撞）
+  let result = kinetic_energy_loss_partial(1.0, 10.0, 1.0, 0.0, 0.5)
+  assert_eq(result > 0.0, true)
+}
+
+// ============================================================================
+// 25. 滚动运动测试（Rolling Motion）
+// ============================================================================
+
+///|
+test "rolling_velocity - basic calculation" {
+  // 角速度 5 rad/s，半径 2 m
+  // 线速度 = 5*2 = 10 m/s
+  let result = rolling_velocity(5.0, 2.0)
+  assert_eq(result, 10.0)
+}
+
+///|
+test "rolling_kinetic_energy - basic calculation" {
+  // 质量 2 kg，线速度 5 m/s，转动惯量 4 kg·m²，角速度 2.5 rad/s
+  // 平动动能 = 0.5*2*25 = 25 J
+  // 转动动能 = 0.5*4*6.25 = 12.5 J
+  // 总动能 = 37.5 J
+  let result = rolling_kinetic_energy(2.0, 5.0, 4.0, 2.5)
+  assert_eq(result, 37.5)
+}
+
+///|
+test "rolling_kinetic_energy_simplified - basic calculation" {
+  // 质量 2 kg，线速度 5 m/s，转动惯量系数 0.5
+  // 总动能 = 0.5*2*25*(1+0.5) = 25*1.5 = 37.5 J
+  let result = rolling_kinetic_energy_simplified(2.0, 5.0, 0.5)
+  assert_eq(result, 37.5)
+}
+
+///|
+test "rolling_acceleration_downhill - basic calculation" {
+  // 重力加速度 9.8 m/s²，角度 30°，转动惯量系数 0.5
+  // 加速度 = 9.8*sin(30°)/(1+0.5) = 4.9/1.5 ≈ 3.27 m/s²
+  let angle = 3.141592653589793 / 6.0
+  let result = rolling_acceleration_downhill(9.8, angle, 0.5)
+  assert_eq((result - 3.27).abs() < 0.1, true)
+}
+
+// ============================================================================
+// 26. 非惯性参考系测试（Non-inertial Reference Frames）
+// ============================================================================
+
+///|
+test "centrifugal_force - basic calculation" {
+  // 质量 2 kg，角速度 3 rad/s，半径 2 m
+  // 离心力 = 2*9*2 = 36 N
+  let result = centrifugal_force(2.0, 3.0, 2.0)
+  assert_eq(result, 36.0)
+}
+
+///|
+test "coriolis_force - basic calculation" {
+  // 质量 2 kg，相对速度 5 m/s，角速度 3 rad/s
+  // 科里奥利力 = 2*2*5*3 = 60 N
+  let result = coriolis_force(2.0, 5.0, 3.0)
+  assert_eq(result, 60.0)
+}
+
+///|
+test "inertial_force - basic calculation" {
+  // 质量 5 kg，参考系加速度 4 m/s²
+  // 惯性力 = -5*4 = -20 N
+  let result = inertial_force(5.0, 4.0)
+  assert_eq(result, -20.0)
+}
+
+// ============================================================================
+// 27. 刚体动力学扩展测试（Extended Rigid Body Dynamics）
+// ============================================================================
+
+///|
+test "precession_angular_velocity - basic calculation" {
+  // 质量 1 kg，重力加速度 9.8 m/s²，距离 0.1 m，转动惯量 0.1 kg·m²，自转角速度 10 rad/s
+  // 进动角速度 = 1*9.8*0.1/(0.1*10) = 0.98 rad/s
+  let result = precession_angular_velocity(1.0, 9.8, 0.1, 0.1, 10.0)
+  assert_eq((result - 0.98).abs() < 0.01, true)
+}
+
+///|
+test "rotational_power - basic calculation" {
+  // 力矩 20 N·m，角速度 5 rad/s
+  // 功率 = 20*5 = 100 W
+  let result = rotational_power(20.0, 5.0)
+  assert_eq(result, 100.0)
+}
+
+// ============================================================================
+// 28. 轨道力学扩展测试（Extended Orbital Mechanics）
+// ============================================================================
+
+///|
+test "orbital_energy_circular - basic calculation" {
+  // 质量 1000 kg，中心质量 5.972e24 kg，半径 6.371e6 m，G = 6.67430e-11
+  // 轨道能量 = -6.67430e-11*1000*5.972e24/(2*6.371e6) ≈ -3.13e10 J
+  let result = orbital_energy_circular(1000.0, 5.972e24, 6.371e6, 6.67430e-11)
+  assert_eq(result < 0.0, true)
+}
+
+///|
+test "orbital_energy_elliptical - basic calculation" {
+  // 质量 1000 kg，中心质量 5.972e24 kg，半长轴 7.0e6 m，G = 6.67430e-11
+  // 轨道能量 < 0（椭圆轨道）
+  let result = orbital_energy_elliptical(1000.0, 5.972e24, 7.0e6, 6.67430e-11)
+  assert_eq(result < 0.0, true)
+}
+
+///|
+test "areal_velocity - basic calculation" {
+  // 距离 1.496e11 m，垂直速度 29780 m/s
+  // 面积速度 = 0.5*1.496e11*29780 ≈ 2.23e15 m²/s
+  let result = areal_velocity(1.496e11, 29780.0)
+  assert_eq((result - 2.23e15).abs() < 0.1e15, true)
+}
+
+// ============================================================================
+// 29. 波动测试（Waves）
+// ============================================================================
+
+///|
+test "wave_displacement - basic calculation" {
+  // 振幅 5 m，波数 2 rad/m，位置 0 m，角频率 4 rad/s，时间 0 s，初相位 0
+  // 位移 = 5*cos(0) = 5 m
+  let result = wave_displacement(5.0, 2.0, 0.0, 4.0, 0.0, 0.0)
+  assert_eq((result - 5.0).abs() < 0.0001, true)
+}
+
+///|
+test "wave_velocity - basic calculation" {
+  // 频率 2 Hz，波长 5 m，波速 = 2*5 = 10 m/s
+  let result = wave_velocity(2.0, 5.0)
+  assert_eq(result, 10.0)
+}
+
+///|
+test "wave_velocity_from_angular - basic calculation" {
+  // 角频率 10 rad/s，波数 2 rad/m，波速 = 10/2 = 5 m/s
+  let result = wave_velocity_from_angular(10.0, 2.0)
+  assert_eq(result, 5.0)
+}
+
+///|
+test "doppler_effect_source_moving - source approaching" {
+  // 声源频率 1000 Hz，声速 340 m/s，声源速度 20 m/s（朝向观察者）
+  // 观察频率 = 1000*340/(340-20) = 340000/320 ≈ 1062.5 Hz
+  let result = doppler_effect_source_moving(1000.0, 340.0, 20.0)
+  assert_eq((result - 1062.5).abs() < 1.0, true)
+}
+
+///|
+test "doppler_effect_observer_moving - observer approaching" {
+  // 声源频率 1000 Hz，声速 340 m/s，观察者速度 20 m/s（朝向声源）
+  // 观察频率 = 1000*(340+20)/340 = 360000/340 ≈ 1058.8 Hz
+  let result = doppler_effect_observer_moving(1000.0, 340.0, 20.0)
+  assert_eq((result - 1058.8).abs() < 1.0, true)
+}
+
+// ============================================================================
+// 30. 流体力学扩展测试（Extended Fluid Mechanics）
+// ============================================================================
+
+///|
+test "reynolds_number - basic calculation" {
+  // 密度 1000 kg/m³，流速 2 m/s，特征长度 0.1 m，动力粘度 0.001 Pa·s
+  // 雷诺数 = 1000*2*0.1/0.001 = 200000
+  let result = reynolds_number(1000.0, 2.0, 0.1, 0.001)
+  assert_eq(result, 200000.0)
+}
+
+///|
+test "stokes_drag - basic calculation" {
+  // 半径 0.01 m，速度 0.1 m/s，动力粘度 0.001 Pa·s
+  // 斯托克斯阻力 = 6*π*0.001*0.01*0.1 ≈ 1.88e-5 N
+  let result = stokes_drag(0.01, 0.1, 0.001)
+  assert_eq(result > 0.0, true)
+}
+
+///|
+test "viscous_force - basic calculation" {
+  // 动力粘度 0.001 Pa·s，面积 0.1 m²，速度梯度 10 s⁻¹
+  // 粘性力 = 0.001*0.1*10 = 0.001 N
+  let result = viscous_force(0.001, 0.1, 10.0)
+  assert_eq(result, 0.001)
+}
+
+///|
+test "poiseuille_flow_rate - basic calculation" {
+  // 压力差 1000 Pa，半径 0.01 m，长度 1 m，动力粘度 0.001 Pa·s
+  // 流量 = π*1000*0.01^4/(8*0.001*1) ≈ 3.93e-6 m³/s
+  let result = poiseuille_flow_rate(1000.0, 0.01, 1.0, 0.001)
+  assert_eq(result > 0.0, true)
+}
+
+// ============================================================================
+// 31. 能量和动量扩展测试（Extended Energy and Momentum）
+// ============================================================================
+
+///|
+test "velocity_from_impulse - basic calculation" {
+  // 质量 2 kg，初速度 5 m/s，冲量 10 N·s
+  // 末速度 = 5 + 10/2 = 10 m/s
+  let result = velocity_from_impulse(2.0, 5.0, 10.0)
+  assert_eq(result, 10.0)
+}
+
+///|
+test "rocket_equation - basic calculation" {
+  // 初始速度 0 m/s，排气速度 2000 m/s，初始质量 1000 kg，最终质量 500 kg
+  // 最终速度 = 0 + 2000*ln(1000/500) = 2000*ln(2) ≈ 1386.3 m/s
+  let result = rocket_equation(0.0, 2000.0, 1000.0, 500.0)
+  assert_eq((result - 1386.3).abs() < 10.0, true)
+}
+
+///|
+test "work_from_power - basic calculation" {
+  // 功率 100 W，时间 5 s，功 = 100*5 = 500 J
+  let result = work_from_power(100.0, 5.0)
+  assert_eq(result, 500.0)
+}
+
+// ============================================================================
+// 32. 振动系统扩展测试（Extended Vibration Systems）
+// ============================================================================
+
+///|
+test "damping_ratio - basic calculation" {
+  // 阻尼系数 2 s⁻¹，固有角频率 5 rad/s
+  // 阻尼比 = 2/5 = 0.4
+  let result = damping_ratio(2.0, 5.0)
+  assert_eq(result, 0.4)
+}
+
+///|
+test "physical_pendulum_angular_frequency - basic calculation" {
+  // 质量 1 kg，重力加速度 9.8 m/s²，转动惯量 0.1 kg·m²，距离 0.1 m
+  // 角频率 = sqrt(1*9.8*0.1/0.1) = sqrt(9.8) ≈ 3.13 rad/s
+  let result = physical_pendulum_angular_frequency(1.0, 9.8, 0.1, 0.1)
+  assert_eq((result - 3.13).abs() < 0.1, true)
+}
+
+///|
+test "physical_pendulum_period - basic calculation" {
+  // 质量 1 kg，重力加速度 9.8 m/s²，转动惯量 0.1 kg·m²，距离 0.1 m
+  // 周期 = 2π*sqrt(0.1/(1*9.8*0.1)) = 2π*sqrt(0.102) ≈ 2.0 s
+  let result = physical_pendulum_period(1.0, 9.8, 0.1, 0.1)
+  assert_eq((result - 2.0).abs() < 0.1, true)
+}
+
+///|
+test "double_pendulum_upper_frequency - basic calculation" {
+  // 重力加速度 9.8 m/s²，上摆长度 1 m
+  // 角频率 = sqrt(9.8/1) ≈ 3.13 rad/s
+  let result = double_pendulum_upper_frequency(9.8, 1.0)
+  assert_eq((result - 3.13).abs() < 0.1, true)
+}
+
+// ============================================================================
+// 33. 刚体静力学测试（Rigid Body Statics）
+// ============================================================================
+
+///|
+test "normal_force_horizontal - basic calculation" {
+  // 质量 10 kg，重力加速度 9.8 m/s²
+  // 支撑力 = 10*9.8 = 98 N
+  let result = normal_force_horizontal(10.0, 9.8)
+  assert_eq(result, 98.0)
+}
+
+///|
+test "equilibrium_net_force_1d - balanced" {
+  // 力数组 [10, -5, -5]
+  // 合力 = 0，应该平衡
+  let forces = [10.0, -5.0, -5.0]
+  let result = equilibrium_net_force_1d(forces)
+  assert_eq(result, true)
+}
+
+///|
+test "equilibrium_net_torque - balanced" {
+  // 力矩数组 [10, -5, -5]
+  // 合力矩 = 0，应该平衡
+  let torques = [10.0, -5.0, -5.0]
+  let result = equilibrium_net_torque(torques)
+  assert_eq(result, true)
+}
+
+// ============================================================================
+// 34. 运动学扩展测试（Extended Kinematics）
+// ============================================================================
+
+///|
+test "time_from_velocity_change - basic calculation" {
+  // 初速度 0 m/s，末速度 20 m/s，加速度 5 m/s²
+  // 时间 = (20-0)/5 = 4 s
+  let result = time_from_velocity_change(0.0, 20.0, 5.0)
+  assert_eq(result, 4.0)
+}
+
+///|
+test "acceleration_from_displacement - basic calculation" {
+  // 初速度 0 m/s，末速度 10 m/s，位移 25 m
+  // 加速度 = (100-0)/(2*25) = 2 m/s²
+  let result = acceleration_from_displacement(0.0, 10.0, 25.0)
+  assert_eq(result, 2.0)
+}
+
+///|
+test "projectile_velocity_magnitude - basic calculation" {
+  // 初速度 20 m/s，角度 45°，时间 1 s，重力加速度 9.8 m/s²
+  // 速度大小应该小于初速度
+  let angle = 3.141592653589793 / 4.0
+  let result = projectile_velocity_magnitude(20.0, angle, 1.0, 9.8)
+  assert_eq(result < 20.0, true)
+}
+
+///|
+test "projectile_velocity_angle - basic calculation" {
+  // 初速度 20 m/s，角度 45°，时间 1 s，重力加速度 9.8 m/s²
+  // 速度角度应该小于45°
+  let angle = 3.141592653589793 / 4.0
+  let result = projectile_velocity_angle(20.0, angle, 1.0, 9.8)
+  assert_eq(result < angle, true)
+}
+
+// ============================================================================
+// 35. 碰撞力学测试（Collision Mechanics）
+// ============================================================================
+
+///|
+test "elastic_collision_1d_v1f - equal masses" {
+  // 质量相等，m1=1 kg, m2=1 kg, v1i=10 m/s, v2i=0 m/s
+  // 物体1末速度 = (1-1)*10/2 + 2*1*0/2 = 0 m/s
+  let result = elastic_collision_1d_v1f(1.0, 1.0, 10.0, 0.0)
+  assert_eq((result - 0.0).abs() < 0.0001, true)
+}
+
+///|
+test "elastic_collision_1d_v2f - equal masses" {
+  // 质量相等，m1=1 kg, m2=1 kg, v1i=10 m/s, v2i=0 m/s
+  // 物体2末速度 = 2*1*10/2 + (1-1)*0/2 = 10 m/s
+  let result = elastic_collision_1d_v2f(1.0, 1.0, 10.0, 0.0)
+  assert_eq((result - 10.0).abs() < 0.0001, true)
+}
+
+///|
+test "perfectly_inelastic_collision_velocity - basic calculation" {
+  // m1=2 kg, v1i=10 m/s, m2=3 kg, v2i=0 m/s
+  // 碰撞后速度 = (2*10 + 3*0)/5 = 4 m/s
+  let result = perfectly_inelastic_collision_velocity(2.0, 3.0, 10.0, 0.0)
+  assert_eq(result, 4.0)
+}
+
+///|
+test "inelastic_collision_1d_v1f - basic calculation" {
+  // m1=2 kg, m2=3 kg, v1i=10 m/s, v2i=0 m/s, 恢复系数 0.5
+  // 验证结果合理性
+  let result = inelastic_collision_1d_v1f(2.0, 3.0, 10.0, 0.0, 0.5)
+  assert_eq(result >= 0.0 && result <= 10.0, true)
+}
+
+///|
+test "generalized_force_1d - basic calculation" {
+  // 势能 50 J，广义坐标 5 m
+  // 广义力 = -50/5 = -10 N（简化版本）
+  let result = generalized_force_1d(50.0, 5.0)
+  assert_eq(result, -10.0)
+}
+
+// ============================================================================
+// 37. 哈密顿力学扩展测试（Extended Hamiltonian Mechanics）
+// ============================================================================
+
+///|
+test "hamiltonian_q_dot_1d - basic calculation" {
+  // 动量 10 kg·m/s
+  // q_dot = 10（简化版本，实际应为 p/m）
+  let result = hamiltonian_q_dot_1d(10.0)
+  assert_eq(result, 10.0)
+}
+
+// ============================================================================
+// 38. 狭义相对论力学测试（Special Relativity）
+// ============================================================================
+
+///|
+test "lorentz_factor - low velocity" {
+  // 速度 3e6 m/s，光速 3e8 m/s
+  // 洛伦兹因子 ≈ 1.00005（低速近似）
+  let result = lorentz_factor(3.0e6, 3.0e8)
+  assert_eq((result - 1.0).abs() < 0.01, true)
+}
+
+///|
+test "relativistic_mass - low velocity" {
+  // 静质量 1 kg，速度 3e6 m/s，光速 3e8 m/s
+  // 相对论质量 ≈ 1.00005 kg（低速近似）
+  let result = relativistic_mass(1.0, 3.0e6, 3.0e8)
+  assert_eq((result - 1.0).abs() < 0.01, true)
+}
+
+///|
+test "relativistic_momentum - basic calculation" {
+  // 静质量 1 kg，速度 3e6 m/s，光速 3e8 m/s
+  // 相对论动量 ≈ 3e6 kg·m/s（低速近似）
+  let result = relativistic_momentum(1.0, 3.0e6, 3.0e8)
+  assert_eq((result - 3.0e6).abs() < 1000.0, true)
+}
+
+///|
+test "mass_energy_equivalence - basic calculation" {
+  // 质量 1 kg，光速 3e8 m/s
+  // 能量 = 1*(3e8)² = 9e16 J
+  let result = mass_energy_equivalence(1.0, 3.0e8)
+  assert_eq(result, 9.0e16)
+}
+
+// ============================================================================
+// 39. 连续介质力学测试（Continuum Mechanics）
+// ============================================================================
+
+///|
+test "normal_stress - basic calculation" {
+  // 力 1000 N，面积 0.01 m²
+  // 正应力 = 1000/0.01 = 100000 Pa
+  let result = normal_stress(1000.0, 0.01)
+  assert_eq(result, 100000.0)
+}
+
+///|
+test "shear_stress - basic calculation" {
+  // 切向力 500 N，面积 0.01 m²
+  // 剪应力 = 500/0.01 = 50000 Pa
+  let result = shear_stress(500.0, 0.01)
+  assert_eq(result, 50000.0)
+}
+
+///|
+test "normal_strain - basic calculation" {
+  // 长度变化 0.01 m，原始长度 1 m
+  // 正应变 = 0.01/1 = 0.01
+  let result = normal_strain(0.01, 1.0)
+  assert_eq(result, 0.01)
+}
+
+///|
+test "youngs_modulus - basic calculation" {
+  // 应力 100000 Pa，应变 0.001
+  // 杨氏模量 = 100000/0.001 = 1e8 Pa
+  let result = youngs_modulus(100000.0, 0.001)
+  assert_eq(result, 1.0e8)
+}
+
+///|
+test "hookes_law_force - basic calculation" {
+  // 弹簧常数 100 N/m，位移 0.5 m
+  // 弹性恢复力 = -100*0.5 = -50 N
+  let result = hookes_law_force(100.0, 0.5)
+  assert_eq(result, -50.0)
+}
+
+// ============================================================================
+// 40. 声学测试（Acoustics）
+// ============================================================================
+
+///|
+test "sound_intensity - basic calculation" {
+  // 声压振幅 1 Pa，密度 1.2 kg/m³，声速 340 m/s
+  // 声强 = 1²/(2*1.2*340) ≈ 0.001225 W/m²
+  let result = sound_intensity(1.0, 1.2, 340.0)
+  assert_eq((result - 0.001225).abs() < 0.0001, true)
+}
+
+///|
+test "sound_intensity_level - basic calculation" {
+  // 声强 0.001 W/m²，参考声强 1e-12 W/m²
+  // 声强级 = 10*log10(0.001/1e-12) = 10*log10(1e9) = 90 dB
+  let result = sound_intensity_level(0.001, 1.0e-12)
+  assert_eq((result - 90.0).abs() < 1.0, true)
+}
+
+///|
+test "sound_speed_ideal_gas - basic calculation" {
+  // 比热容比 1.4，气体常数 287 J/(kg·K)，温度 300 K
+  // 声速 = sqrt(1.4*287*300) ≈ 347 m/s
+  let result = sound_speed_ideal_gas(1.4, 287.0, 300.0)
+  assert_eq((result - 347.0).abs() < 5.0, true)
+}
+
+// ============================================================================
+// 41. 耦合振荡器测试（Coupled Oscillators）
+// ============================================================================
+
+///|
+test "normal_mode_frequency_symmetric - basic calculation" {
+  // 弹簧常数 100 N/m，耦合弹簧常数 50 N/m，质量 4 kg
+  // 对称模式频率 = sqrt((100+2*50)/4) = sqrt(50) ≈ 7.07 rad/s
+  let result = normal_mode_frequency_symmetric(100.0, 50.0, 4.0)
+  assert_eq((result - 7.07).abs() < 0.1, true)
+}
+
+///|
+test "normal_mode_frequency_antisymmetric - basic calculation" {
+  // 弹簧常数 100 N/m，耦合弹簧常数 50 N/m，质量 4 kg
+  // 反对称模式频率 = sqrt(100/4) = 5 rad/s
+  let result = normal_mode_frequency_antisymmetric(100.0, 4.0)
+  assert_eq(result, 5.0)
+}
+
+///|
+test "normal_coordinate_symmetric - basic calculation" {
+  // 振子1位移 5 m，振子2位移 3 m
+  // 对称坐标 = (5+3)/2 = 4 m
+  let result = normal_coordinate_symmetric(5.0, 3.0)
+  assert_eq(result, 4.0)
+}
+
+///|
+test "normal_coordinate_antisymmetric - basic calculation" {
+  // 振子1位移 5 m，振子2位移 3 m
+  // 反对称坐标 = (5-3)/2 = 1 m
+  let result = normal_coordinate_antisymmetric(5.0, 3.0)
+  assert_eq(result, 1.0)
+}
+
+// ============================================================================
+// 42. 刚体运动学扩展测试（Extended Rigid Body Kinematics）
+// ============================================================================
+
+///|
+test "angular_acceleration_from_velocity - basic calculation" {
+  // 初始角速度 2 rad/s，末角速度 10 rad/s，时间 4 s
+  // 角加速度 = (10-2)/4 = 2 rad/s²
+  let result = angular_acceleration_from_velocity(2.0, 10.0, 4.0)
+  assert_eq(result, 2.0)
+}
+
+///|
+test "angular_displacement_constant_acc - basic calculation" {
+  // 初始角速度 1 rad/s，角加速度 2 rad/s²，时间 3 s
+  // 角位移 = 1*3 + 0.5*2*9 = 3 + 9 = 12 rad
+  let result = angular_displacement_constant_acc(1.0, 2.0, 3.0)
+  assert_eq(result, 12.0)
+}
+
+///|
+test "angular_velocity_constant_acc - basic calculation" {
+  // 初始角速度 2 rad/s，角加速度 3 rad/s²，时间 4 s
+  // 角速度 = 2 + 3*4 = 14 rad/s
+  let result = angular_velocity_constant_acc(2.0, 3.0, 4.0)
+  assert_eq(result, 14.0)
+}
+
+// ============================================================================
+// 43. 相空间和守恒量测试（Phase Space and Conserved Quantities）
+// ============================================================================
+
+///|
+test "phase_space_volume_1d - basic calculation" {
+  // 位置 5 m，动量 10 kg·m/s
+  // 相空间体积 = 5*10 = 50
+  let result = phase_space_volume_1d(5.0, 10.0)
+  assert_eq(result, 50.0)
+}
+
+// ============================================================================
+// 44. 振动耦合系统测试（Vibrational Coupling Systems）
+// ============================================================================
+
+///|
+test "beat_frequency - basic calculation" {
+  // 频率1 100 Hz，频率2 102 Hz
+  // 拍频 = |100-102| = 2 Hz
+  let result = beat_frequency(100.0, 102.0)
+  assert_eq(result, 2.0)
+}
+
+///|
+test "beat_period - basic calculation" {
+  // 频率1 100 Hz，频率2 102 Hz
+  // 拍周期 = 1/2 = 0.5 s
+  let result = beat_period(100.0, 102.0)
+  assert_eq(result, 0.5)
+}
+
+// ============================================================================
+// 45. 流体动力学扩展测试（Extended Fluid Dynamics）
+// ============================================================================
+
+///|
+test "mach_number - basic calculation" {
+  // 流速 680 m/s，声速 340 m/s
+  // 马赫数 = 680/340 = 2.0
+  let result = mach_number(680.0, 340.0)
+  assert_eq(result, 2.0)
+}
+
+///|
+test "venturi_velocity_ratio - basic calculation" {
+  // 截面1面积 0.1 m²，截面2面积 0.05 m²
+  // 速度比 = 0.1/0.05 = 2.0
+  let result = venturi_velocity_ratio(0.1, 0.05)
+  assert_eq(result, 2.0)
+}
