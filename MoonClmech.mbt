@@ -2879,3 +2879,1535 @@ pub fn time_weighted_average(
     }
   }
 }
+
+// ============================================================================
+// Multi-body Systems (3D Extensions)
+// ============================================================================
+
+///|
+/// Reduced mass for two-body system
+/// m1: mass of object 1 (kg)
+/// m2: mass of object 2 (kg)
+pub fn reduced_mass(m1 : Double, m2 : Double) -> Double {
+  if m1 + m2 > 0.0 {
+    m1 * m2 / (m1 + m2)
+  } else {
+    0.0
+  }
+}
+
+///|
+/// Center of mass position (3D, multiple particles)
+/// masses: mass array (kg)
+/// positions_x: x-coordinate array (m)
+/// positions_y: y-coordinate array (m)
+/// positions_z: z-coordinate array (m)
+/// Returns: x-coordinate of center of mass
+pub fn center_of_mass_3d_x(
+  masses : Array[Double],
+  positions_x : Array[Double],
+  _positions_y : Array[Double],
+  _positions_z : Array[Double],
+) -> Double {
+  if masses.length() != positions_x.length() || masses.length() == 0 {
+    0.0
+  } else {
+    let mut total_mass = 0.0
+    let mut weighted_sum = 0.0
+    for i = 0; i < masses.length(); i = i + 1 {
+      total_mass = total_mass + masses[i]
+      weighted_sum = weighted_sum + masses[i] * positions_x[i]
+    }
+    if total_mass > 0.0 {
+      weighted_sum / total_mass
+    } else {
+      0.0
+    }
+  }
+}
+
+///|
+/// Center of mass position (3D, multiple particles) - y coordinate
+pub fn center_of_mass_3d_y(
+  masses : Array[Double],
+  _positions_x : Array[Double],
+  positions_y : Array[Double],
+  _positions_z : Array[Double],
+) -> Double {
+  if masses.length() != positions_y.length() || masses.length() == 0 {
+    0.0
+  } else {
+    let mut total_mass = 0.0
+    let mut weighted_sum = 0.0
+    for i = 0; i < masses.length(); i = i + 1 {
+      total_mass = total_mass + masses[i]
+      weighted_sum = weighted_sum + masses[i] * positions_y[i]
+    }
+    if total_mass > 0.0 {
+      weighted_sum / total_mass
+    } else {
+      0.0
+    }
+  }
+}
+
+///|
+/// Center of mass position (3D, multiple particles) - z coordinate
+pub fn center_of_mass_3d_z(
+  masses : Array[Double],
+  _positions_x : Array[Double],
+  _positions_y : Array[Double],
+  positions_z : Array[Double],
+) -> Double {
+  if masses.length() != positions_z.length() || masses.length() == 0 {
+    0.0
+  } else {
+    let mut total_mass = 0.0
+    let mut weighted_sum = 0.0
+    for i = 0; i < masses.length(); i = i + 1 {
+      total_mass = total_mass + masses[i]
+      weighted_sum = weighted_sum + masses[i] * positions_z[i]
+    }
+    if total_mass > 0.0 {
+      weighted_sum / total_mass
+    } else {
+      0.0
+    }
+  }
+}
+
+///|
+/// Total momentum (3D, multiple particles) - x component
+/// masses: mass array (kg)
+/// velocities_x: x-velocity array (m/s)
+/// velocities_y: y-velocity array (m/s)
+/// velocities_z: z-velocity array (m/s)
+pub fn total_momentum_3d_x(
+  masses : Array[Double],
+  velocities_x : Array[Double],
+  _velocities_y : Array[Double],
+  _velocities_z : Array[Double],
+) -> Double {
+  if masses.length() != velocities_x.length() {
+    0.0
+  } else {
+    let mut total = 0.0
+    for i = 0; i < masses.length(); i = i + 1 {
+      total = total + masses[i] * velocities_x[i]
+    }
+    total
+  }
+}
+
+///|
+/// Total momentum (3D, multiple particles) - y component
+pub fn total_momentum_3d_y(
+  masses : Array[Double],
+  _velocities_x : Array[Double],
+  velocities_y : Array[Double],
+  _velocities_z : Array[Double],
+) -> Double {
+  if masses.length() != velocities_y.length() {
+    0.0
+  } else {
+    let mut total = 0.0
+    for i = 0; i < masses.length(); i = i + 1 {
+      total = total + masses[i] * velocities_y[i]
+    }
+    total
+  }
+}
+
+///|
+/// Total momentum (3D, multiple particles) - z component
+pub fn total_momentum_3d_z(
+  masses : Array[Double],
+  _velocities_x : Array[Double],
+  _velocities_y : Array[Double],
+  velocities_z : Array[Double],
+) -> Double {
+  if masses.length() != velocities_z.length() {
+    0.0
+  } else {
+    let mut total = 0.0
+    for i = 0; i < masses.length(); i = i + 1 {
+      total = total + masses[i] * velocities_z[i]
+    }
+    total
+  }
+}
+
+///|
+/// Total angular momentum (3D, multiple particles) - about origin
+/// masses: mass array (kg)
+/// positions_x: x-coordinate array (m)
+/// positions_y: y-coordinate array (m)
+/// positions_z: z-coordinate array (m)
+/// velocities_x: x-velocity array (m/s)
+/// velocities_y: y-velocity array (m/s)
+/// velocities_z: z-velocity array (m/s)
+/// Returns: z-component of angular momentum (L_z = x*p_y - y*p_x)
+pub fn total_angular_momentum_3d_z(
+  masses : Array[Double],
+  positions_x : Array[Double],
+  positions_y : Array[Double],
+  _positions_z : Array[Double],
+  velocities_x : Array[Double],
+  velocities_y : Array[Double],
+  _velocities_z : Array[Double],
+) -> Double {
+  if masses.length() != positions_x.length() || masses.length() == 0 {
+    0.0
+  } else {
+    let mut total = 0.0
+    for i = 0; i < masses.length(); i = i + 1 {
+      // L_z = x*p_y - y*p_x = x*(m*v_y) - y*(m*v_x)
+      total = total +
+        masses[i] *
+        (positions_x[i] * velocities_y[i] - positions_y[i] * velocities_x[i])
+    }
+    total
+  }
+}
+
+// ============================================================================
+// Coordinate System Transformations
+// ============================================================================
+
+///|
+/// Convert Cartesian to polar coordinates (2D)
+/// x: x-coordinate (m)
+/// y: y-coordinate (m)
+/// Returns: radius (m)
+pub fn cartesian_to_polar_r(x : Double, y : Double) -> Double {
+  Double::sqrt(x * x + y * y)
+}
+
+///|
+/// Convert Cartesian to polar coordinates (2D)
+/// x: x-coordinate (m)
+/// y: y-coordinate (m)
+/// Returns: angle (radians)
+pub fn cartesian_to_polar_theta(x : Double, y : Double) -> Double {
+  if x != 0.0 {
+    @math.atan(y / x)
+  } else if y > 0.0 {
+    3.141592653589793 / 2.0
+  } else if y < 0.0 {
+    -3.141592653589793 / 2.0
+  } else {
+    0.0
+  }
+}
+
+///|
+/// Convert polar to Cartesian coordinates (2D)
+/// r: radius (m)
+/// theta: angle (radians)
+/// Returns: x-coordinate
+pub fn polar_to_cartesian_x(r : Double, theta : Double) -> Double {
+  r * @math.cos(theta)
+}
+
+///|
+/// Convert polar to Cartesian coordinates (2D)
+/// r: radius (m)
+/// theta: angle (radians)
+/// Returns: y-coordinate
+pub fn polar_to_cartesian_y(r : Double, theta : Double) -> Double {
+  r * @math.sin(theta)
+}
+
+///|
+/// Convert Cartesian to spherical coordinates (3D)
+/// x: x-coordinate (m)
+/// y: y-coordinate (m)
+/// z: z-coordinate (m)
+/// Returns: radius r (m)
+pub fn cartesian_to_spherical_r(x : Double, y : Double, z : Double) -> Double {
+  Double::sqrt(x * x + y * y + z * z)
+}
+
+///|
+/// Convert Cartesian to spherical coordinates (3D)
+/// x: x-coordinate (m)
+/// y: y-coordinate (m)
+/// z: z-coordinate (m)
+/// Returns: polar angle theta (radians, 0 to π)
+pub fn cartesian_to_spherical_theta(
+  x : Double,
+  y : Double,
+  z : Double,
+) -> Double {
+  let r = cartesian_to_spherical_r(x, y, z)
+  if r > 0.0 {
+    @math.acos(z / r)
+  } else {
+    0.0
+  }
+}
+
+///|
+/// Convert Cartesian to spherical coordinates (3D)
+/// x: x-coordinate (m)
+/// y: y-coordinate (m)
+/// z: z-coordinate (m)
+/// Returns: azimuthal angle phi (radians, 0 to 2π)
+pub fn cartesian_to_spherical_phi(
+  x : Double,
+  y : Double,
+  _z : Double,
+) -> Double {
+  if x != 0.0 {
+    @math.atan(y / x)
+  } else if y > 0.0 {
+    3.141592653589793 / 2.0
+  } else if y < 0.0 {
+    -3.141592653589793 / 2.0
+  } else {
+    0.0
+  }
+}
+
+///|
+/// Convert spherical to Cartesian coordinates (3D)
+/// r: radius (m)
+/// theta: polar angle (radians)
+/// phi: azimuthal angle (radians)
+/// Returns: x-coordinate
+pub fn spherical_to_cartesian_x(
+  r : Double,
+  theta : Double,
+  phi : Double,
+) -> Double {
+  r * @math.sin(theta) * @math.cos(phi)
+}
+
+///|
+/// Convert spherical to Cartesian coordinates (3D)
+/// r: radius (m)
+/// theta: polar angle (radians)
+/// phi: azimuthal angle (radians)
+/// Returns: y-coordinate
+pub fn spherical_to_cartesian_y(
+  r : Double,
+  theta : Double,
+  phi : Double,
+) -> Double {
+  r * @math.sin(theta) * @math.sin(phi)
+}
+
+///|
+/// Convert spherical to Cartesian coordinates (3D)
+/// r: radius (m)
+/// theta: polar angle (radians)
+/// phi: azimuthal angle (radians)
+/// Returns: z-coordinate
+pub fn spherical_to_cartesian_z(
+  r : Double,
+  theta : Double,
+  _phi : Double,
+) -> Double {
+  r * @math.cos(theta)
+}
+
+///|
+/// Velocity in polar coordinates - radial component
+/// vx: x-velocity (m/s)
+/// vy: y-velocity (m/s)
+/// x: x-position (m)
+/// y: y-position (m)
+pub fn velocity_polar_radial(
+  vx : Double,
+  vy : Double,
+  x : Double,
+  y : Double,
+) -> Double {
+  let r = cartesian_to_polar_r(x, y)
+  if r > 0.0 {
+    (x * vx + y * vy) / r
+  } else {
+    0.0
+  }
+}
+
+///|
+/// Velocity in polar coordinates - angular component
+/// vx: x-velocity (m/s)
+/// vy: y-velocity (m/s)
+/// x: x-position (m)
+/// y: y-position (m)
+pub fn velocity_polar_angular(
+  vx : Double,
+  vy : Double,
+  x : Double,
+  y : Double,
+) -> Double {
+  let r = cartesian_to_polar_r(x, y)
+  if r > 0.0 {
+    (x * vy - y * vx) / (r * r)
+  } else {
+    0.0
+  }
+}
+
+// ============================================================================
+// 2D Collision (Complete Solution)
+// ============================================================================
+
+///|
+/// 2D elastic collision: final velocity of object 1 (x-component)
+/// m1: mass of object 1 (kg)
+/// m2: mass of object 2 (kg)
+/// v1ix: initial x-velocity of object 1 (m/s)
+/// v1iy: initial y-velocity of object 1 (m/s)
+/// v2ix: initial x-velocity of object 2 (m/s)
+/// v2iy: initial y-velocity of object 2 (m/s)
+/// collision_angle: angle of collision line (radians)
+pub fn elastic_collision_2d_v1fx(
+  m1 : Double,
+  m2 : Double,
+  v1ix : Double,
+  v1iy : Double,
+  v2ix : Double,
+  v2iy : Double,
+  collision_angle : Double,
+) -> Double {
+  // Transform to collision coordinate system
+  let cos_a = @math.cos(collision_angle)
+  let sin_a = @math.sin(collision_angle)
+  let v1ix_n = v1ix * cos_a + v1iy * sin_a
+  let v1iy_t = -v1ix * sin_a + v1iy * cos_a
+  let v2ix_n = v2ix * cos_a + v2iy * sin_a
+  let _v2iy_t = -v2ix * sin_a + v2iy * cos_a
+
+  // 1D collision along normal direction
+  let v1fx_n = (m1 - m2) * v1ix_n / (m1 + m2) + 2.0 * m2 * v2ix_n / (m1 + m2)
+  let v1fy_t = v1iy_t // Tangential component unchanged
+
+  // Transform back
+  v1fx_n * cos_a - v1fy_t * sin_a
+}
+
+///|
+/// 2D elastic collision: final velocity of object 1 (y-component)
+pub fn elastic_collision_2d_v1fy(
+  m1 : Double,
+  m2 : Double,
+  v1ix : Double,
+  v1iy : Double,
+  v2ix : Double,
+  v2iy : Double,
+  collision_angle : Double,
+) -> Double {
+  let cos_a = @math.cos(collision_angle)
+  let sin_a = @math.sin(collision_angle)
+  let v1ix_n = v1ix * cos_a + v1iy * sin_a
+  let v1iy_t = -v1ix * sin_a + v1iy * cos_a
+  let v2ix_n = v2ix * cos_a + v2iy * sin_a
+  let _v2iy_t = -v2ix * sin_a + v2iy * cos_a
+  let v1fx_n = (m1 - m2) * v1ix_n / (m1 + m2) + 2.0 * m2 * v2ix_n / (m1 + m2)
+  let v1fy_t = v1iy_t
+  v1fx_n * sin_a + v1fy_t * cos_a
+}
+
+///|
+/// 2D elastic collision: final velocity of object 2 (x-component)
+pub fn elastic_collision_2d_v2fx(
+  m1 : Double,
+  m2 : Double,
+  v1ix : Double,
+  v1iy : Double,
+  v2ix : Double,
+  v2iy : Double,
+  collision_angle : Double,
+) -> Double {
+  let cos_a = @math.cos(collision_angle)
+  let sin_a = @math.sin(collision_angle)
+  let v1ix_n = v1ix * cos_a + v1iy * sin_a
+  let _v1iy_t = -v1ix * sin_a + v1iy * cos_a
+  let v2ix_n = v2ix * cos_a + v2iy * sin_a
+  let v2iy_t = -v2ix * sin_a + v2iy * cos_a
+  let v2fx_n = 2.0 * m1 * v1ix_n / (m1 + m2) + (m2 - m1) * v2ix_n / (m1 + m2)
+  let v2fy_t = v2iy_t
+  v2fx_n * cos_a - v2fy_t * sin_a
+}
+
+///|
+/// 2D elastic collision: final velocity of object 2 (y-component)
+pub fn elastic_collision_2d_v2fy(
+  m1 : Double,
+  m2 : Double,
+  v1ix : Double,
+  v1iy : Double,
+  v2ix : Double,
+  v2iy : Double,
+  collision_angle : Double,
+) -> Double {
+  let cos_a = @math.cos(collision_angle)
+  let sin_a = @math.sin(collision_angle)
+  let v1ix_n = v1ix * cos_a + v1iy * sin_a
+  let _v1iy_t = -v1ix * sin_a + v1iy * cos_a
+  let v2ix_n = v2ix * cos_a + v2iy * sin_a
+  let v2iy_t = -v2ix * sin_a + v2iy * cos_a
+  let v2fx_n = 2.0 * m1 * v1ix_n / (m1 + m2) + (m2 - m1) * v2ix_n / (m1 + m2)
+  let v2fy_t = v2iy_t
+  v2fx_n * sin_a + v2fy_t * cos_a
+}
+
+// ============================================================================
+// Numerical Integration Methods
+// ============================================================================
+
+///|
+/// Euler method for solving first-order ODE: dy/dt = f(t, y)
+/// f: function that returns derivative (dy/dt) given (t, y)
+/// t0: initial time
+/// y0: initial value
+/// dt: time step
+/// n_steps: number of steps
+/// Returns: final value of y
+/// Note: This is a simplified version; full implementation would require function pointers
+pub fn euler_method_step(
+  _current_t : Double,
+  current_y : Double,
+  derivative : Double,
+  dt : Double,
+) -> Double {
+  current_y + derivative * dt
+}
+
+///|
+/// Runge-Kutta 4th order method (RK4) - single step
+/// f: derivative function (simplified: takes derivative value directly)
+/// t: current time
+/// y: current value
+/// dt: time step
+/// k1: derivative at current point (k1 = f(t, y))
+/// k2: derivative at midpoint using k1 (k2 = f(t + dt/2, y + k1*dt/2))
+/// k3: derivative at midpoint using k2 (k3 = f(t + dt/2, y + k2*dt/2))
+/// k4: derivative at endpoint using k3 (k4 = f(t + dt, y + k3*dt))
+/// Returns: next value of y
+pub fn rk4_step(
+  current_y : Double,
+  k1 : Double,
+  k2 : Double,
+  k3 : Double,
+  k4 : Double,
+  dt : Double,
+) -> Double {
+  current_y + (k1 + 2.0 * k2 + 2.0 * k3 + k4) * dt / 6.0
+}
+
+///|
+/// Numerical integration: Trapezoidal rule
+/// values: array of function values
+/// step_size: spacing between values
+pub fn trapezoidal_rule(values : Array[Double], step_size : Double) -> Double {
+  if values.length() < 2 {
+    0.0
+  } else {
+    let mut sum = 0.0
+    for i = 0; i < values.length() - 1; i = i + 1 {
+      sum = sum + (values[i] + values[i + 1]) * step_size / 2.0
+    }
+    sum
+  }
+}
+
+///|
+/// Numerical integration: Simpson's rule (requires odd number of points)
+/// values: array of function values (must have odd length)
+/// step_size: spacing between values
+pub fn simpsons_rule(values : Array[Double], step_size : Double) -> Double {
+  let n = values.length()
+  if n < 3 || n % 2 == 0 {
+    0.0 // Simpson's rule requires odd number of points
+  } else {
+    let mut sum = values[0] + values[n - 1]
+    for i = 1; i < n - 1; i = i + 1 {
+      if i % 2 == 1 {
+        sum = sum + 4.0 * values[i]
+      } else {
+        sum = sum + 2.0 * values[i]
+      }
+    }
+    sum * step_size / 3.0
+  }
+}
+
+// ============================================================================
+// Statistical Mechanics (Basic)
+// ============================================================================
+
+///|
+/// Ideal gas law: calculate pressure
+/// n: number of moles
+/// t: temperature (K)
+/// v: volume (m³)
+/// r: gas constant (J/(mol·K))
+pub fn ideal_gas_pressure(
+  n : Double,
+  t : Double,
+  v : Double,
+  r : Double,
+) -> Double {
+  if v > 0.0 {
+    n * r * t / v
+  } else {
+    0.0
+  }
+}
+
+///|
+/// Ideal gas law: calculate volume
+/// n: number of moles
+/// t: temperature (K)
+/// p: pressure (Pa)
+/// r: gas constant (J/(mol·K))
+pub fn ideal_gas_volume(
+  n : Double,
+  t : Double,
+  p : Double,
+  r : Double,
+) -> Double {
+  if p > 0.0 {
+    n * r * t / p
+  } else {
+    0.0
+  }
+}
+
+///|
+/// Root mean square speed (Maxwell-Boltzmann distribution)
+/// t: temperature (K)
+/// m: molecular mass (kg)
+/// k: Boltzmann constant (J/K)
+pub fn rms_speed(t : Double, m : Double, k : Double) -> Double {
+  if m > 0.0 {
+    Double::sqrt(3.0 * k * t / m)
+  } else {
+    0.0
+  }
+}
+
+///|
+/// Most probable speed (Maxwell-Boltzmann distribution)
+/// t: temperature (K)
+/// m: molecular mass (kg)
+/// k: Boltzmann constant (J/K)
+pub fn most_probable_speed(t : Double, m : Double, k : Double) -> Double {
+  if m > 0.0 {
+    Double::sqrt(2.0 * k * t / m)
+  } else {
+    0.0
+  }
+}
+
+///|
+/// Average kinetic energy per molecule (ideal gas)
+/// t: temperature (K)
+/// k: Boltzmann constant (J/K)
+pub fn average_kinetic_energy_per_molecule(t : Double, k : Double) -> Double {
+  1.5 * k * t
+}
+
+// ============================================================================
+// Lagrange Points (Restricted Three-Body Problem)
+// ============================================================================
+
+///|
+/// Lagrange point L1 distance (circular restricted three-body problem)
+/// r: distance between primary bodies (m)
+/// m1: mass of primary body 1 (kg)
+/// m2: mass of primary body 2 (kg)
+/// Returns: distance from m1 to L1
+pub fn lagrange_point_l1_distance(
+  r : Double,
+  m1 : Double,
+  m2 : Double,
+) -> Double {
+  // Simplified calculation using approximation
+  // L1 ≈ r * (m2/(3*m1))^(1/3) for m2 << m1
+  // Using cube root approximation: x^(1/3) ≈ exp(ln(x)/3)
+  if m1 > 0.0 {
+    let ratio = m2 / (3.0 * m1)
+    if ratio > 0.0 {
+      // Cube root: ratio^(1/3) using iterative method or approximation
+      // For small ratios, use Newton's method approximation
+      let mut x = ratio
+      // Newton's method for cube root: x_new = (2*x + ratio/(x*x)) / 3
+      for _i = 0; _i < 10; _i = _i + 1 {
+        if x > 0.0 {
+          x = (2.0 * x + ratio / (x * x)) / 3.0
+        }
+      }
+      r * x
+    } else {
+      0.0
+    }
+  } else {
+    0.0
+  }
+}
+
+///|
+/// Lagrange point L2 distance (circular restricted three-body problem)
+/// r: distance between primary bodies (m)
+/// m1: mass of primary body 1 (kg)
+/// m2: mass of primary body 2 (kg)
+/// Returns: distance from m1 to L2
+pub fn lagrange_point_l2_distance(
+  r : Double,
+  m1 : Double,
+  m2 : Double,
+) -> Double {
+  // L2 ≈ r * (1 + (m2/(3*m1))^(1/3)) for m2 << m1, on opposite side
+  if m1 > 0.0 {
+    let ratio = m2 / (3.0 * m1)
+    if ratio > 0.0 {
+      let mut x = ratio
+      for _i = 0; _i < 10; _i = _i + 1 {
+        if x > 0.0 {
+          x = (2.0 * x + ratio / (x * x)) / 3.0
+        }
+      }
+      r * (1.0 + x)
+    } else {
+      r
+    }
+  } else {
+    0.0
+  }
+}
+
+///|
+/// Lagrange point L3 distance (circular restricted three-body problem)
+/// r: distance between primary bodies (m)
+/// m1: mass of primary body 1 (kg)
+/// m2: mass of primary body 2 (kg)
+/// Returns: distance from m1 to L3 (approximately r)
+pub fn lagrange_point_l3_distance(
+  r : Double,
+  _m1 : Double,
+  _m2 : Double,
+) -> Double {
+  // L3 is approximately at distance r from m1, on opposite side from m2
+  r
+}
+
+// ============================================================================
+// Statistical Mechanics Extensions
+// ============================================================================
+
+///|
+/// Ideal gas law: calculate temperature
+/// n: number of moles (mol)
+/// p: pressure (Pa)
+/// v: volume (m³)
+/// r: gas constant (J/(mol·K)), default 8.314462618
+/// Returns: temperature (K)
+pub fn ideal_gas_temperature(
+  n : Double,
+  p : Double,
+  v : Double,
+  r : Double,
+) -> Double {
+  if n > 0.0 && r > 0.0 {
+    p * v / (n * r)
+  } else {
+    0.0
+  }
+}
+
+///|
+/// Average kinetic energy per molecule (ideal gas)
+/// t: temperature (K)
+/// k_b: Boltzmann constant (J/K), default 1.380649e-23
+/// Returns: average kinetic energy (J)
+pub fn ideal_gas_avg_kinetic_energy(t : Double, k_b : Double) -> Double {
+  if t >= 0.0 {
+    1.5 * k_b * t
+  } else {
+    0.0
+  }
+}
+
+///|
+/// Root mean square (RMS) speed of gas molecules (alternative name)
+/// t: temperature (K)
+/// m: mass per molecule (kg)
+/// k_b: Boltzmann constant (J/K), default 1.380649e-23
+/// Returns: RMS speed (m/s)
+pub fn ideal_gas_rms_speed(t : Double, m : Double, k_b : Double) -> Double {
+  if m > 0.0 && t >= 0.0 {
+    Double::sqrt(3.0 * k_b * t / m)
+  } else {
+    0.0
+  }
+}
+
+///|
+/// Most probable speed of gas molecules (Maxwell-Boltzmann distribution)
+/// t: temperature (K)
+/// m: mass per molecule (kg)
+/// k_b: Boltzmann constant (J/K), default 1.380649e-23
+/// Returns: most probable speed (m/s)
+pub fn ideal_gas_most_probable_speed(
+  t : Double,
+  m : Double,
+  k_b : Double,
+) -> Double {
+  if m > 0.0 && t >= 0.0 {
+    Double::sqrt(2.0 * k_b * t / m)
+  } else {
+    0.0
+  }
+}
+
+///|
+/// Average speed of gas molecules (Maxwell-Boltzmann distribution)
+/// t: temperature (K)
+/// m: mass per molecule (kg)
+/// k_b: Boltzmann constant (J/K), default 1.380649e-23
+/// Returns: average speed (m/s)
+pub fn ideal_gas_avg_speed(t : Double, m : Double, k_b : Double) -> Double {
+  if m > 0.0 && t >= 0.0 {
+    // <v> = sqrt(8*k_B*T/(π*m))
+    let pi = 3.14159265358979323846
+    Double::sqrt(8.0 * k_b * t / (pi * m))
+  } else {
+    0.0
+  }
+}
+
+///|
+/// Maxwell-Boltzmann speed distribution function
+/// v: speed (m/s)
+/// t: temperature (K)
+/// m: mass per molecule (kg)
+/// k_b: Boltzmann constant (J/K), default 1.380649e-23
+/// Returns: probability density f(v) (s/m)
+pub fn maxwell_boltzmann_speed_distribution(
+  v : Double,
+  t : Double,
+  m : Double,
+  k_b : Double,
+) -> Double {
+  if v >= 0.0 && m > 0.0 && t > 0.0 {
+    let v_sq = v * v
+    let pi = 3.14159265358979323846
+    let coeff = 4.0 * pi * Double::pow(m / (2.0 * pi * k_b * t), 1.5)
+    coeff * v_sq * @math.exp(-m * v_sq / (2.0 * k_b * t))
+  } else {
+    0.0
+  }
+}
+
+///|
+/// Maxwell-Boltzmann energy distribution function
+/// e: energy (J)
+/// t: temperature (K)
+/// k_b: Boltzmann constant (J/K), default 1.380649e-23
+/// Returns: probability density f(E) (1/J)
+pub fn maxwell_boltzmann_energy_distribution(
+  e : Double,
+  t : Double,
+  k_b : Double,
+) -> Double {
+  if e >= 0.0 && t > 0.0 {
+    let pi = 3.14159265358979323846
+    let coeff = 2.0 / (Double::sqrt(pi) * Double::pow(k_b * t, 1.5))
+    coeff * Double::sqrt(e) * @math.exp(-e / (k_b * t))
+  } else {
+    0.0
+  }
+}
+
+// ============================================================================
+// Energy and Power Extensions
+// ============================================================================
+
+///|
+/// Energy-time uncertainty relation (quantum mechanics)
+/// delta_e: energy uncertainty (J)
+/// delta_t: time uncertainty (s)
+/// Returns: minimum uncertainty product (J·s)
+pub fn energy_time_uncertainty(delta_e : Double, delta_t : Double) -> Double {
+  if delta_e >= 0.0 && delta_t >= 0.0 {
+    delta_e * delta_t
+  } else {
+    0.0
+  }
+}
+
+///|
+/// Power spectral density (simplified, for periodic signal)
+/// a: amplitude (arbitrary units)
+/// f: frequency (Hz)
+/// Returns: power spectral density (arbitrary units)
+pub fn power_spectral_density(a : Double, f : Double) -> Double {
+  if f > 0.0 {
+    a * a / (2.0 * f)
+  } else {
+    0.0
+  }
+}
+
+///|
+/// Energy dissipation rate from velocity (damped oscillator, alternative)
+/// b: damping coefficient (kg/s)
+/// v: velocity (m/s)
+/// Returns: power dissipated (W)
+pub fn energy_dissipation_rate_velocity(b : Double, v : Double) -> Double {
+  if b >= 0.0 {
+    b * v * v
+  } else {
+    0.0
+  }
+}
+
+///|
+/// Thermal efficiency (Carnot cycle)
+/// t_hot: hot reservoir temperature (K)
+/// t_cold: cold reservoir temperature (K)
+/// Returns: maximum efficiency (dimensionless, 0-1)
+pub fn thermal_efficiency_carnot(t_hot : Double, t_cold : Double) -> Double {
+  if t_hot > 0.0 && t_cold >= 0.0 && t_hot > t_cold {
+    1.0 - t_cold / t_hot
+  } else {
+    0.0
+  }
+}
+
+///|
+/// Thermal efficiency (general heat engine)
+/// q_in: heat input (J)
+/// q_out: heat output (J)
+/// Returns: efficiency (dimensionless, 0-1)
+pub fn thermal_efficiency(q_in : Double, q_out : Double) -> Double {
+  if q_in > 0.0 && q_out >= 0.0 {
+    let eff = (q_in - q_out) / q_in
+    if eff > 1.0 {
+      1.0
+    } else if eff < 0.0 {
+      0.0
+    } else {
+      eff
+    }
+  } else {
+    0.0
+  }
+}
+
+///|
+/// Energy conversion efficiency in a chain
+/// efficiencies: array of individual efficiencies (dimensionless, 0-1)
+/// Returns: overall efficiency (dimensionless, 0-1)
+pub fn energy_conversion_chain_efficiency(
+  efficiencies : Array[Double],
+) -> Double {
+  let mut product = 1.0
+  for i = 0; i < efficiencies.length(); i = i + 1 {
+    let eff = efficiencies[i]
+    if eff > 1.0 {
+      product = product * 1.0
+    } else if eff < 0.0 {
+      product = product * 0.0
+    } else {
+      product = product * eff
+    }
+  }
+  product
+}
+
+// ============================================================================
+// Fluid Mechanics Extensions
+// ============================================================================
+
+///|
+/// Pascal's principle: pressure transmission
+/// f1: force applied (N)
+/// a1: area where force is applied (m²)
+/// a2: area where pressure is transmitted (m²)
+/// Returns: force at a2 (N)
+pub fn pascal_principle_force(f1 : Double, a1 : Double, a2 : Double) -> Double {
+  if a1 > 0.0 && a2 > 0.0 {
+    f1 * a2 / a1
+  } else {
+    0.0
+  }
+}
+
+///|
+/// Pascal's principle: pressure calculation
+/// f: force (N)
+/// a: area (m²)
+/// Returns: pressure (Pa)
+pub fn pascal_principle_pressure(f : Double, a : Double) -> Double {
+  if a > 0.0 {
+    f / a
+  } else {
+    0.0
+  }
+}
+
+///|
+/// Communicating vessels: equilibrium height difference
+/// rho1: density of fluid 1 (kg/m³)
+/// rho2: density of fluid 2 (kg/m³)
+/// h1: height of fluid 1 (m)
+/// g: gravitational acceleration (m/s²), default 9.81
+/// Returns: height of fluid 2 for equilibrium (m)
+pub fn communicating_vessels_height(
+  rho1 : Double,
+  rho2 : Double,
+  h1 : Double,
+  _g : Double,
+) -> Double {
+  if rho2 > 0.0 {
+    rho1 * h1 / rho2
+  } else {
+    0.0
+  }
+}
+
+///|
+/// Pressure transmission in hydraulic system
+/// p_in: input pressure (Pa)
+/// a_in: input area (m²)
+/// a_out: output area (m²)
+/// Returns: output pressure (Pa)
+pub fn pressure_transmission(
+  p_in : Double,
+  a_in : Double,
+  a_out : Double,
+) -> Double {
+  if a_out > 0.0 && a_in > 0.0 {
+    p_in * a_in / a_out
+  } else {
+    p_in
+  }
+}
+
+///|
+/// Venturi effect: velocity in constriction
+/// v1: velocity in wide section (m/s)
+/// a1: area of wide section (m²)
+/// a2: area of constriction (m²)
+/// Returns: velocity in constriction (m/s)
+pub fn venturi_velocity(v1 : Double, a1 : Double, a2 : Double) -> Double {
+  if a2 > 0.0 && a1 > 0.0 {
+    v1 * a1 / a2
+  } else {
+    0.0
+  }
+}
+
+///|
+/// Venturi effect: pressure difference
+/// rho: fluid density (kg/m³)
+/// v1: velocity in wide section (m/s)
+/// v2: velocity in constriction (m/s)
+/// Returns: pressure difference P1 - P2 (Pa)
+pub fn venturi_pressure_difference(
+  rho : Double,
+  v1 : Double,
+  v2 : Double,
+) -> Double {
+  if rho > 0.0 {
+    0.5 * rho * (v2 * v2 - v1 * v1)
+  } else {
+    0.0
+  }
+}
+
+///|
+/// Pitot tube: dynamic pressure
+/// rho: fluid density (kg/m³)
+/// v: fluid velocity (m/s)
+/// Returns: dynamic pressure (Pa)
+pub fn pitot_dynamic_pressure(rho : Double, v : Double) -> Double {
+  if rho > 0.0 {
+    0.5 * rho * v * v
+  } else {
+    0.0
+  }
+}
+
+///|
+/// Pitot tube: velocity from pressure difference
+/// delta_p: pressure difference (Pa)
+/// rho: fluid density (kg/m³)
+/// Returns: fluid velocity (m/s)
+pub fn pitot_velocity(delta_p : Double, rho : Double) -> Double {
+  if rho > 0.0 && delta_p >= 0.0 {
+    Double::sqrt(2.0 * delta_p / rho)
+  } else {
+    0.0
+  }
+}
+
+// ============================================================================
+// Utility Functions: Unit Conversions
+// ============================================================================
+// Note: deg_to_rad and rad_to_deg are already defined in tools.mbt
+
+///|
+/// Convert electron-volts to joules
+/// ev: energy in electron-volts (eV)
+/// Returns: energy in joules (J)
+pub fn ev_to_joule(ev : Double) -> Double {
+  // 1 eV = 1.602176634e-19 J
+  ev * 1.602176634e-19
+}
+
+///|
+/// Convert joules to electron-volts
+/// joule: energy in joules (J)
+/// Returns: energy in electron-volts (eV)
+pub fn joule_to_ev(joule : Double) -> Double {
+  if joule >= 0.0 {
+    joule / 1.602176634e-19
+  } else {
+    0.0
+  }
+}
+
+///|
+/// Convert calories to joules
+/// cal: energy in calories (cal)
+/// Returns: energy in joules (J)
+pub fn cal_to_joule(cal : Double) -> Double {
+  // 1 cal = 4.184 J
+  cal * 4.184
+}
+
+///|
+/// Convert joules to calories
+/// joule: energy in joules (J)
+/// Returns: energy in calories (cal)
+pub fn joule_to_cal(joule : Double) -> Double {
+  if joule >= 0.0 {
+    joule / 4.184
+  } else {
+    0.0
+  }
+}
+
+///|
+/// Convert BTU to joules
+/// btu: energy in British Thermal Units (BTU)
+/// Returns: energy in joules (J)
+pub fn btu_to_joule(btu : Double) -> Double {
+  // 1 BTU = 1055.05585262 J
+  btu * 1055.05585262
+}
+
+///|
+/// Convert joules to BTU
+/// joule: energy in joules (J)
+/// Returns: energy in BTU
+pub fn joule_to_btu(joule : Double) -> Double {
+  if joule >= 0.0 {
+    joule / 1055.05585262
+  } else {
+    0.0
+  }
+}
+
+///|
+/// Convert horsepower to watts
+/// hp: power in horsepower (hp)
+/// Returns: power in watts (W)
+pub fn hp_to_watt(hp : Double) -> Double {
+  // 1 hp = 745.699872 W
+  hp * 745.699872
+}
+
+///|
+/// Convert watts to horsepower
+/// watt: power in watts (W)
+/// Returns: power in horsepower (hp)
+pub fn watt_to_hp(watt : Double) -> Double {
+  if watt >= 0.0 {
+    watt / 745.699872
+  } else {
+    0.0
+  }
+}
+
+///|
+/// Convert BTU per hour to watts
+/// btu_per_h: power in BTU/h
+/// Returns: power in watts (W)
+pub fn btu_per_h_to_watt(btu_per_h : Double) -> Double {
+  // 1 BTU/h = 0.29307107 W
+  btu_per_h * 0.29307107
+}
+
+///|
+/// Convert watts to BTU per hour
+/// watt: power in watts (W)
+/// Returns: power in BTU/h
+pub fn watt_to_btu_per_h(watt : Double) -> Double {
+  if watt >= 0.0 {
+    watt / 0.29307107
+  } else {
+    0.0
+  }
+}
+
+// Note: Temperature conversion functions (celsius_to_kelvin, kelvin_to_celsius,
+// fahrenheit_to_celsius, celsius_to_fahrenheit) are already defined in tools.mbt
+
+///|
+/// Convert Fahrenheit to Kelvin
+/// fahrenheit: temperature in Fahrenheit (°F)
+/// Returns: temperature in Kelvin (K)
+pub fn fahrenheit_to_kelvin(fahrenheit : Double) -> Double {
+  // Use functions from tools.mbt via module path if needed
+  // For now, inline the calculation
+  let celsius = (fahrenheit - 32.0) * 5.0 / 9.0
+  celsius + 273.15
+}
+
+///|
+/// Convert Kelvin to Fahrenheit
+/// kelvin: temperature in Kelvin (K)
+/// Returns: temperature in Fahrenheit (°F)
+pub fn kelvin_to_fahrenheit(kelvin : Double) -> Double {
+  // Use functions from tools.mbt via module path if needed
+  // For now, inline the calculation
+  let celsius = kelvin - 273.15
+  celsius * 9.0 / 5.0 + 32.0
+}
+
+///|
+/// Convert atmospheres to pascals
+/// atm: pressure in atmospheres (atm)
+/// Returns: pressure in pascals (Pa)
+pub fn atm_to_pascal(atm : Double) -> Double {
+  // 1 atm = 101325 Pa
+  atm * 101325.0
+}
+
+///|
+/// Convert pascals to atmospheres
+/// pascal: pressure in pascals (Pa)
+/// Returns: pressure in atmospheres (atm)
+pub fn pascal_to_atm(pascal : Double) -> Double {
+  if pascal >= 0.0 {
+    pascal / 101325.0
+  } else {
+    0.0
+  }
+}
+
+///|
+/// Convert bar to pascals
+/// bar: pressure in bar
+/// Returns: pressure in pascals (Pa)
+pub fn bar_to_pascal(bar : Double) -> Double {
+  // 1 bar = 100000 Pa
+  bar * 100000.0
+}
+
+///|
+/// Convert pascals to bar
+/// pascal: pressure in pascals (Pa)
+/// Returns: pressure in bar
+pub fn pascal_to_bar(pascal : Double) -> Double {
+  if pascal >= 0.0 {
+    pascal / 100000.0
+  } else {
+    0.0
+  }
+}
+
+///|
+/// Convert PSI to pascals
+/// psi: pressure in pounds per square inch (psi)
+/// Returns: pressure in pascals (Pa)
+pub fn psi_to_pascal(psi : Double) -> Double {
+  // 1 psi = 6894.757293168 Pa
+  psi * 6894.757293168
+}
+
+///|
+/// Convert pascals to PSI
+/// pascal: pressure in pascals (Pa)
+/// Returns: pressure in PSI
+pub fn pascal_to_psi(pascal : Double) -> Double {
+  if pascal >= 0.0 {
+    pascal / 6894.757293168
+  } else {
+    0.0
+  }
+}
+
+// ============================================================================
+// Utility Functions: Coordinate System Conversions
+// ============================================================================
+
+///|
+/// Convert polar coordinates to Cartesian coordinates (2D)
+/// r: radial distance
+/// theta: angle in radians
+/// Returns: (x, y) as a tuple
+pub fn polar_to_cartesian_2d(r : Double, theta : Double) -> (Double, Double) {
+  (r * @math.cos(theta), r * @math.sin(theta))
+}
+
+///|
+/// Convert Cartesian coordinates to polar coordinates (2D)
+/// x: x-coordinate
+/// y: y-coordinate
+/// Returns: (r, theta) as a tuple, where theta is in radians [0, 2π)
+pub fn cartesian_to_polar_2d(x : Double, y : Double) -> (Double, Double) {
+  let r = Double::sqrt(x * x + y * y)
+  let pi = 3.14159265358979323846
+  let theta = if x == 0.0 && y == 0.0 {
+    0.0
+  } else if x == 0.0 {
+    if y > 0.0 {
+      pi / 2.0
+    } else {
+      3.0 * pi / 2.0
+    }
+  } else {
+    let atan_val = @math.atan(y / x)
+    if x > 0.0 {
+      if y >= 0.0 {
+        atan_val
+      } else {
+        atan_val + 2.0 * pi
+      }
+    } else {
+      atan_val + pi
+    }
+  }
+  (r, theta)
+}
+
+///|
+/// Convert spherical coordinates to Cartesian coordinates (3D)
+/// r: radial distance
+/// theta: polar angle in radians (0 to π, measured from +z axis)
+/// phi: azimuthal angle in radians (0 to 2π, measured from +x axis in xy-plane)
+/// Returns: (x, y, z) as a tuple
+pub fn spherical_to_cartesian_3d(
+  r : Double,
+  theta : Double,
+  phi : Double,
+) -> (Double, Double, Double) {
+  let sin_theta = @math.sin(theta)
+  (
+    r * sin_theta * @math.cos(phi),
+    r * sin_theta * @math.sin(phi),
+    r * @math.cos(theta),
+  )
+}
+
+///|
+/// Convert Cartesian coordinates to spherical coordinates (3D)
+/// x: x-coordinate
+/// y: y-coordinate
+/// z: z-coordinate
+/// Returns: (r, theta, phi) as a tuple
+///   r: radial distance
+///   theta: polar angle in radians [0, π]
+///   phi: azimuthal angle in radians [0, 2π)
+pub fn cartesian_to_spherical_3d(
+  x : Double,
+  y : Double,
+  z : Double,
+) -> (Double, Double, Double) {
+  let r = Double::sqrt(x * x + y * y + z * z)
+  let pi = 3.14159265358979323846
+  let theta = if r == 0.0 { 0.0 } else { @math.acos(z / r) }
+  let phi = if x == 0.0 && y == 0.0 {
+    0.0
+  } else if x == 0.0 {
+    if y > 0.0 {
+      pi / 2.0
+    } else {
+      3.0 * pi / 2.0
+    }
+  } else {
+    let atan_val = @math.atan(y / x)
+    if x > 0.0 {
+      if y >= 0.0 {
+        atan_val
+      } else {
+        atan_val + 2.0 * pi
+      }
+    } else {
+      atan_val + pi
+    }
+  }
+  (r, theta, phi)
+}
+
+///|
+/// Convert cylindrical coordinates to Cartesian coordinates (3D)
+/// rho: radial distance in xy-plane
+/// phi: azimuthal angle in radians (0 to 2π, measured from +x axis)
+/// z: height coordinate
+/// Returns: (x, y, z) as a tuple
+pub fn cylindrical_to_cartesian_3d(
+  rho : Double,
+  phi : Double,
+  z : Double,
+) -> (Double, Double, Double) {
+  (rho * @math.cos(phi), rho * @math.sin(phi), z)
+}
+
+///|
+/// Convert Cartesian coordinates to cylindrical coordinates (3D)
+/// x: x-coordinate
+/// y: y-coordinate
+/// z: z-coordinate
+/// Returns: (rho, phi, z) as a tuple
+///   rho: radial distance in xy-plane
+///   phi: azimuthal angle in radians [0, 2π)
+///   z: height coordinate
+pub fn cartesian_to_cylindrical_3d(
+  x : Double,
+  y : Double,
+  z : Double,
+) -> (Double, Double, Double) {
+  let rho = Double::sqrt(x * x + y * y)
+  let pi = 3.14159265358979323846
+  let phi = if x == 0.0 && y == 0.0 {
+    0.0
+  } else if x == 0.0 {
+    if y > 0.0 {
+      pi / 2.0
+    } else {
+      3.0 * pi / 2.0
+    }
+  } else {
+    let atan_val = @math.atan(y / x)
+    if x > 0.0 {
+      if y >= 0.0 {
+        atan_val
+      } else {
+        atan_val + 2.0 * pi
+      }
+    } else {
+      atan_val + pi
+    }
+  }
+  (rho, phi, z)
+}
+
+// ============================================================================
+// Utility Functions: Dimensional Analysis
+// ============================================================================
+
+///|
+/// Check if a value has correct dimensions for velocity (length/time)
+/// length: length value (m)
+/// time: time value (s)
+/// Returns: velocity in m/s, or 0.0 if invalid
+pub fn dimensional_check_velocity(length : Double, time : Double) -> Double {
+  if time > 0.0 {
+    length / time
+  } else {
+    0.0
+  }
+}
+
+///|
+/// Check if a value has correct dimensions for acceleration (length/time²)
+/// length: length value (m)
+/// time: time value (s)
+/// Returns: acceleration in m/s², or 0.0 if invalid
+pub fn dimensional_check_acceleration(length : Double, time : Double) -> Double {
+  if time > 0.0 {
+    length / (time * time)
+  } else {
+    0.0
+  }
+}
+
+///|
+/// Check if a value has correct dimensions for force (mass × acceleration)
+/// mass: mass value (kg)
+/// acceleration: acceleration value (m/s²)
+/// Returns: force in N, or 0.0 if invalid
+pub fn dimensional_check_force(mass : Double, acceleration : Double) -> Double {
+  if mass > 0.0 {
+    mass * acceleration
+  } else {
+    0.0
+  }
+}
+
+///|
+/// Check if a value has correct dimensions for energy (force × length)
+/// force: force value (N)
+/// length: length value (m)
+/// Returns: energy in J, or 0.0 if invalid
+pub fn dimensional_check_energy(force : Double, length : Double) -> Double {
+  if force >= 0.0 {
+    force * length
+  } else {
+    0.0
+  }
+}
+
+///|
+/// Check if a value has correct dimensions for power (energy/time)
+/// energy: energy value (J)
+/// time: time value (s)
+/// Returns: power in W, or 0.0 if invalid
+pub fn dimensional_check_power(energy : Double, time : Double) -> Double {
+  if time > 0.0 {
+    energy / time
+  } else {
+    0.0
+  }
+}
+
+///|
+/// Check if a value has correct dimensions for pressure (force/area)
+/// force: force value (N)
+/// area: area value (m²)
+/// Returns: pressure in Pa, or 0.0 if invalid
+pub fn dimensional_check_pressure(force : Double, area : Double) -> Double {
+  if area > 0.0 {
+    force / area
+  } else {
+    0.0
+  }
+}
+
+///|
+/// Validate physical quantity range (check if value is physically reasonable)
+/// value: physical quantity value
+/// min_val: minimum reasonable value
+/// max_val: maximum reasonable value
+/// Returns: true if value is within reasonable range, false otherwise
+pub fn validate_physical_range(
+  value : Double,
+  min_val : Double,
+  max_val : Double,
+) -> Bool {
+  value >= min_val && value <= max_val
+}
+
+///|
+/// Check if velocity is non-relativistic (v << c)
+/// v: velocity (m/s)
+/// c: speed of light (m/s), default 299792458
+/// threshold: relative threshold (default 0.1 = 10% of c)
+/// Returns: true if velocity is non-relativistic
+pub fn is_non_relativistic(v : Double, c : Double, threshold : Double) -> Bool {
+  if c > 0.0 {
+    Double::abs(v) / c < threshold
+  } else {
+    false
+  }
+}

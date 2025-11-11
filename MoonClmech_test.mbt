@@ -1821,3 +1821,459 @@ test "venturi_velocity_ratio - basic calculation" {
   let result = venturi_velocity_ratio(0.1, 0.05)
   assert_eq(result, 2.0)
 }
+
+// ============================================================================
+// 46. 单位转换测试：能量（Unit Conversions: Energy）
+// ============================================================================
+
+///|
+test "ev_to_joule - basic calculation" {
+  // 1 eV = 1.602176634e-19 J
+  // 1000 eV = 1.602176634e-16 J
+  let result = ev_to_joule(1000.0)
+  assert_eq((result - 1.602176634e-16).abs() < 1.0e-25, true)
+}
+
+///|
+test "joule_to_ev - basic calculation" {
+  // 1.602176634e-19 J = 1 eV
+  let result = joule_to_ev(1.602176634e-19)
+  assert_eq((result - 1.0).abs() < 0.0001, true)
+}
+
+///|
+test "cal_to_joule - basic calculation" {
+  // 1 cal = 4.184 J
+  // 100 cal = 418.4 J
+  let result = cal_to_joule(100.0)
+  assert_eq((result - 418.4).abs() < 0.0001, true)
+}
+
+///|
+test "joule_to_cal - basic calculation" {
+  // 4.184 J = 1 cal
+  let result = joule_to_cal(4.184)
+  assert_eq((result - 1.0).abs() < 0.0001, true)
+}
+
+///|
+test "btu_to_joule - basic calculation" {
+  // 1 BTU = 1055.05585262 J
+  // 2 BTU = 2110.11170524 J
+  let result = btu_to_joule(2.0)
+  assert_eq((result - 2110.11170524).abs() < 0.01, true)
+}
+
+///|
+test "joule_to_btu - basic calculation" {
+  // 1055.05585262 J = 1 BTU
+  let result = joule_to_btu(1055.05585262)
+  assert_eq((result - 1.0).abs() < 0.0001, true)
+}
+
+// ============================================================================
+// 47. 单位转换测试：功率（Unit Conversions: Power）
+// ============================================================================
+
+///|
+test "hp_to_watt - basic calculation" {
+  // 1 hp = 745.699872 W
+  // 2 hp = 1491.399744 W
+  let result = hp_to_watt(2.0)
+  assert_eq((result - 1491.399744).abs() < 0.01, true)
+}
+
+///|
+test "watt_to_hp - basic calculation" {
+  // 745.699872 W = 1 hp
+  let result = watt_to_hp(745.699872)
+  assert_eq((result - 1.0).abs() < 0.0001, true)
+}
+
+///|
+test "btu_per_h_to_watt - basic calculation" {
+  // 1 BTU/h = 0.29307107 W
+  // 100 BTU/h = 29.307107 W
+  let result = btu_per_h_to_watt(100.0)
+  assert_eq((result - 29.307107).abs() < 0.0001, true)
+}
+
+///|
+test "watt_to_btu_per_h - basic calculation" {
+  // 0.29307107 W = 1 BTU/h
+  let result = watt_to_btu_per_h(0.29307107)
+  assert_eq((result - 1.0).abs() < 0.0001, true)
+}
+
+// ============================================================================
+// 48. 单位转换测试：温度（Unit Conversions: Temperature）
+// ============================================================================
+
+///|
+test "fahrenheit_to_kelvin - basic calculation" {
+  // 32°F = 273.15 K (水的冰点)
+  let result = fahrenheit_to_kelvin(32.0)
+  assert_eq((result - 273.15).abs() < 0.01, true)
+}
+
+///|
+test "kelvin_to_fahrenheit - basic calculation" {
+  // 273.15 K = 32°F
+  let result = kelvin_to_fahrenheit(273.15)
+  assert_eq((result - 32.0).abs() < 0.01, true)
+}
+
+///|
+test "fahrenheit_to_kelvin - boiling point" {
+  // 212°F = 373.15 K (水的沸点)
+  let result = fahrenheit_to_kelvin(212.0)
+  assert_eq((result - 373.15).abs() < 0.01, true)
+}
+
+// ============================================================================
+// 49. 单位转换测试：压力（Unit Conversions: Pressure）
+// ============================================================================
+
+///|
+test "atm_to_pascal - basic calculation" {
+  // 1 atm = 101325 Pa
+  // 2 atm = 202650 Pa
+  let result = atm_to_pascal(2.0)
+  assert_eq(result, 202650.0)
+}
+
+///|
+test "pascal_to_atm - basic calculation" {
+  // 101325 Pa = 1 atm
+  let result = pascal_to_atm(101325.0)
+  assert_eq((result - 1.0).abs() < 0.0001, true)
+}
+
+///|
+test "bar_to_pascal - basic calculation" {
+  // 1 bar = 100000 Pa
+  // 2 bar = 200000 Pa
+  let result = bar_to_pascal(2.0)
+  assert_eq(result, 200000.0)
+}
+
+///|
+test "pascal_to_bar - basic calculation" {
+  // 100000 Pa = 1 bar
+  let result = pascal_to_bar(100000.0)
+  assert_eq((result - 1.0).abs() < 0.0001, true)
+}
+
+///|
+test "psi_to_pascal - basic calculation" {
+  // 1 psi = 6894.757293168 Pa
+  // 10 psi = 68947.57293168 Pa
+  let result = psi_to_pascal(10.0)
+  assert_eq((result - 68947.57293168).abs() < 0.01, true)
+}
+
+///|
+test "pascal_to_psi - basic calculation" {
+  // 6894.757293168 Pa = 1 psi
+  let result = pascal_to_psi(6894.757293168)
+  assert_eq((result - 1.0).abs() < 0.0001, true)
+}
+
+// ============================================================================
+// 50. 坐标系转换测试：2D极坐标（Coordinate Conversions: 2D Polar）
+// ============================================================================
+
+///|
+test "polar_to_cartesian_2d - basic calculation" {
+  // r=5, theta=0 (沿x轴)
+  // x=5*cos(0)=5, y=5*sin(0)=0
+  let (x, y) = polar_to_cartesian_2d(5.0, 0.0)
+  assert_eq((x - 5.0).abs() < 0.0001, true)
+  assert_eq((y - 0.0).abs() < 0.0001, true)
+}
+
+///|
+test "polar_to_cartesian_2d - 45 degrees" {
+  // r=10, theta=π/4
+  // x=10*cos(π/4)≈7.071, y=10*sin(π/4)≈7.071
+  let pi = 3.141592653589793
+  let (x, y) = polar_to_cartesian_2d(10.0, pi / 4.0)
+  assert_eq((x - 7.071).abs() < 0.1, true)
+  assert_eq((y - 7.071).abs() < 0.1, true)
+}
+
+///|
+test "cartesian_to_polar_2d - basic calculation" {
+  // x=3, y=4
+  // r=5, theta≈0.9273 rad (约53.13°)
+  let (r, theta) = cartesian_to_polar_2d(3.0, 4.0)
+  assert_eq((r - 5.0).abs() < 0.0001, true)
+  assert_eq((theta - 0.9273).abs() < 0.01, true)
+}
+
+///|
+test "cartesian_to_polar_2d - round trip" {
+  // 测试往返转换：极坐标 -> 笛卡尔 -> 极坐标
+  let r0 = 10.0
+  let theta0 = 3.141592653589793 / 3.0 // 60°
+  let (x, y) = polar_to_cartesian_2d(r0, theta0)
+  let (r1, theta1) = cartesian_to_polar_2d(x, y)
+  assert_eq((r1 - r0).abs() < 0.0001, true)
+  // theta可能相差2π的倍数，需要归一化比较
+  let pi = 3.141592653589793
+  let theta_diff = Double::abs(theta1 - theta0)
+  assert_eq(theta_diff < 0.01 || (theta_diff - 2.0 * pi).abs() < 0.01, true)
+}
+
+// ============================================================================
+// 51. 坐标系转换测试：3D球坐标（Coordinate Conversions: 3D Spherical）
+// ============================================================================
+
+///|
+test "spherical_to_cartesian_3d - basic calculation" {
+  // r=5, theta=0 (沿z轴), phi=0
+  // x=0, y=0, z=5
+  let (x, y, z) = spherical_to_cartesian_3d(5.0, 0.0, 0.0)
+  assert_eq((x - 0.0).abs() < 0.0001, true)
+  assert_eq((y - 0.0).abs() < 0.0001, true)
+  assert_eq((z - 5.0).abs() < 0.0001, true)
+}
+
+///|
+test "spherical_to_cartesian_3d - xy plane" {
+  // r=10, theta=π/2 (xy平面), phi=π/4
+  // x=10*sin(π/2)*cos(π/4)≈7.071, y=10*sin(π/2)*sin(π/4)≈7.071, z=0
+  let pi = 3.141592653589793
+  let (x, y, z) = spherical_to_cartesian_3d(10.0, pi / 2.0, pi / 4.0)
+  assert_eq((x - 7.071).abs() < 0.1, true)
+  assert_eq((y - 7.071).abs() < 0.1, true)
+  assert_eq((z - 0.0).abs() < 0.0001, true)
+}
+
+///|
+test "cartesian_to_spherical_3d - basic calculation" {
+  // x=0, y=0, z=5
+  // r=5, theta=0, phi=0
+  let (r, theta, phi) = cartesian_to_spherical_3d(0.0, 0.0, 5.0)
+  assert_eq((r - 5.0).abs() < 0.0001, true)
+  assert_eq((theta - 0.0).abs() < 0.0001, true)
+  assert_eq((phi - 0.0).abs() < 0.0001, true)
+}
+
+///|
+test "cartesian_to_spherical_3d - round trip" {
+  // 测试往返转换：球坐标 -> 笛卡尔 -> 球坐标
+  let r0 = 10.0
+  let theta0 = 3.141592653589793 / 3.0 // 60°
+  let phi0 = 3.141592653589793 / 4.0 // 45°
+  let (x, y, z) = spherical_to_cartesian_3d(r0, theta0, phi0)
+  let (r1, theta1, phi1) = cartesian_to_spherical_3d(x, y, z)
+  assert_eq((r1 - r0).abs() < 0.0001, true)
+  assert_eq((theta1 - theta0).abs() < 0.01, true)
+  // phi可能相差2π的倍数
+  let pi = 3.141592653589793
+  let phi_diff = Double::abs(phi1 - phi0)
+  assert_eq(phi_diff < 0.01 || (phi_diff - 2.0 * pi).abs() < 0.01, true)
+}
+
+// ============================================================================
+// 52. 坐标系转换测试：3D柱坐标（Coordinate Conversions: 3D Cylindrical）
+// ============================================================================
+
+///|
+test "cylindrical_to_cartesian_3d - basic calculation" {
+  // rho=5, phi=0, z=3
+  // x=5*cos(0)=5, y=5*sin(0)=0, z=3
+  let (x, y, z) = cylindrical_to_cartesian_3d(5.0, 0.0, 3.0)
+  assert_eq((x - 5.0).abs() < 0.0001, true)
+  assert_eq((y - 0.0).abs() < 0.0001, true)
+  assert_eq((z - 3.0).abs() < 0.0001, true)
+}
+
+///|
+test "cylindrical_to_cartesian_3d - 45 degrees" {
+  // rho=10, phi=π/4, z=2
+  // x=10*cos(π/4)≈7.071, y=10*sin(π/4)≈7.071, z=2
+  let pi = 3.141592653589793
+  let (x, y, z) = cylindrical_to_cartesian_3d(10.0, pi / 4.0, 2.0)
+  assert_eq((x - 7.071).abs() < 0.1, true)
+  assert_eq((y - 7.071).abs() < 0.1, true)
+  assert_eq((z - 2.0).abs() < 0.0001, true)
+}
+
+///|
+test "cartesian_to_cylindrical_3d - basic calculation" {
+  // x=3, y=4, z=5
+  // rho=5, phi≈0.9273, z=5
+  let (rho, phi, z) = cartesian_to_cylindrical_3d(3.0, 4.0, 5.0)
+  assert_eq((rho - 5.0).abs() < 0.0001, true)
+  assert_eq((phi - 0.9273).abs() < 0.01, true)
+  assert_eq((z - 5.0).abs() < 0.0001, true)
+}
+
+///|
+test "cartesian_to_cylindrical_3d - round trip" {
+  // 测试往返转换：柱坐标 -> 笛卡尔 -> 柱坐标
+  let rho0 = 10.0
+  let phi0 = 3.141592653589793 / 3.0 // 60°
+  let z0 = 5.0
+  let (x, y, z) = cylindrical_to_cartesian_3d(rho0, phi0, z0)
+  let (rho1, phi1, z1) = cartesian_to_cylindrical_3d(x, y, z)
+  assert_eq((rho1 - rho0).abs() < 0.0001, true)
+  assert_eq((z1 - z0).abs() < 0.0001, true)
+  // phi可能相差2π的倍数
+  let pi = 3.141592653589793
+  let phi_diff = Double::abs(phi1 - phi0)
+  assert_eq(phi_diff < 0.01 || (phi_diff - 2.0 * pi).abs() < 0.01, true)
+}
+
+// ============================================================================
+// 53. 量纲分析测试（Dimensional Analysis）
+// ============================================================================
+
+///|
+test "dimensional_check_velocity - basic calculation" {
+  // 长度 100 m，时间 10 s
+  // 速度 = 100/10 = 10 m/s
+  let result = dimensional_check_velocity(100.0, 10.0)
+  assert_eq(result, 10.0)
+}
+
+///|
+test "dimensional_check_velocity - zero time" {
+  // 时间=0，应返回0
+  let result = dimensional_check_velocity(100.0, 0.0)
+  assert_eq(result, 0.0)
+}
+
+///|
+test "dimensional_check_acceleration - basic calculation" {
+  // 长度 50 m，时间 5 s
+  // 加速度 = 50/(5²) = 2 m/s²
+  let result = dimensional_check_acceleration(50.0, 5.0)
+  assert_eq(result, 2.0)
+}
+
+///|
+test "dimensional_check_force - basic calculation" {
+  // 质量 5 kg，加速度 4 m/s²
+  // 力 = 5*4 = 20 N
+  let result = dimensional_check_force(5.0, 4.0)
+  assert_eq(result, 20.0)
+}
+
+///|
+test "dimensional_check_force - zero mass" {
+  // 质量=0，应返回0
+  let result = dimensional_check_force(0.0, 4.0)
+  assert_eq(result, 0.0)
+}
+
+///|
+test "dimensional_check_energy - basic calculation" {
+  // 力 10 N，长度 5 m
+  // 能量 = 10*5 = 50 J
+  let result = dimensional_check_energy(10.0, 5.0)
+  assert_eq(result, 50.0)
+}
+
+///|
+test "dimensional_check_power - basic calculation" {
+  // 能量 100 J，时间 5 s
+  // 功率 = 100/5 = 20 W
+  let result = dimensional_check_power(100.0, 5.0)
+  assert_eq(result, 20.0)
+}
+
+///|
+test "dimensional_check_power - zero time" {
+  // 时间=0，应返回0
+  let result = dimensional_check_power(100.0, 0.0)
+  assert_eq(result, 0.0)
+}
+
+///|
+test "dimensional_check_pressure - basic calculation" {
+  // 力 1000 N，面积 0.01 m²
+  // 压力 = 1000/0.01 = 100000 Pa
+  let result = dimensional_check_pressure(1000.0, 0.01)
+  assert_eq(result, 100000.0)
+}
+
+///|
+test "dimensional_check_pressure - zero area" {
+  // 面积=0，应返回0
+  let result = dimensional_check_pressure(1000.0, 0.0)
+  assert_eq(result, 0.0)
+}
+
+// ============================================================================
+// 54. 物理量验证测试（Physical Quantity Validation）
+// ============================================================================
+
+///|
+test "validate_physical_range - within range" {
+  // 值 50，范围 [0, 100]
+  let result = validate_physical_range(50.0, 0.0, 100.0)
+  assert_eq(result, true)
+}
+
+///|
+test "validate_physical_range - at minimum" {
+  // 值 0，范围 [0, 100]
+  let result = validate_physical_range(0.0, 0.0, 100.0)
+  assert_eq(result, true)
+}
+
+///|
+test "validate_physical_range - at maximum" {
+  // 值 100，范围 [0, 100]
+  let result = validate_physical_range(100.0, 0.0, 100.0)
+  assert_eq(result, true)
+}
+
+///|
+test "validate_physical_range - below minimum" {
+  // 值 -10，范围 [0, 100]
+  let result = validate_physical_range(-10.0, 0.0, 100.0)
+  assert_eq(result, false)
+}
+
+///|
+test "validate_physical_range - above maximum" {
+  // 值 150，范围 [0, 100]
+  let result = validate_physical_range(150.0, 0.0, 100.0)
+  assert_eq(result, false)
+}
+
+///|
+test "is_non_relativistic - low velocity" {
+  // 速度 3e6 m/s，光速 3e8 m/s，阈值 0.1
+  // v/c = 0.01 < 0.1，非相对论性
+  let result = is_non_relativistic(3.0e6, 3.0e8, 0.1)
+  assert_eq(result, true)
+}
+
+///|
+test "is_non_relativistic - high velocity" {
+  // 速度 1e8 m/s，光速 3e8 m/s，阈值 0.1
+  // v/c = 0.333 > 0.1，相对论性
+  let result = is_non_relativistic(1.0e8, 3.0e8, 0.1)
+  assert_eq(result, false)
+}
+
+///|
+test "is_non_relativistic - zero speed of light" {
+  // 光速=0，应返回false
+  let result = is_non_relativistic(100.0, 0.0, 0.1)
+  assert_eq(result, false)
+}
+
+///|
+test "is_non_relativistic - negative velocity" {
+  // 负速度，绝对值应被使用
+  // -3e6 m/s，光速 3e8 m/s，阈值 0.1
+  // |v|/c = 0.01 < 0.1，非相对论性
+  let result = is_non_relativistic(-3.0e6, 3.0e8, 0.1)
+  assert_eq(result, true)
+}

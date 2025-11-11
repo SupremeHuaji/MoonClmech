@@ -135,7 +135,19 @@
 ### Utility Functions
 
 * **Vector Operations**: 3D vector creation, addition, subtraction, dot product, cross product, magnitude, normalization, projection, reflection
-* **Unit Conversions**: Speed (m/s ↔ km/h), force (N ↔ lbf), energy (J ↔ cal), power (W ↔ hp), temperature (°C ↔ K ↔ °F)
+* **Unit Conversions**: 
+  * Speed (m/s ↔ km/h)
+  * Force (N ↔ lbf)
+  * Energy (J ↔ eV, J ↔ cal, J ↔ BTU)
+  * Power (W ↔ hp, W ↔ BTU/h)
+  * Temperature (°C ↔ K ↔ °F, °F ↔ K)
+  * Pressure (Pa ↔ atm, Pa ↔ bar, Pa ↔ psi)
+* **Coordinate System Conversions**: 
+  * 2D polar ↔ Cartesian coordinates
+  * 3D spherical ↔ Cartesian coordinates
+  * 3D cylindrical ↔ Cartesian coordinates
+* **Dimensional Analysis**: Dimension checking for velocity, acceleration, force, energy, power, pressure
+* **Physical Validation**: Range validation, non-relativistic velocity checks
 * **Numerical Tools**: Maximum/minimum, interpolation, range mapping, range checking, averaging, RMS
 
 ---
@@ -377,12 +389,137 @@ test "unit conversions" {
   let force_back = lbf_to_n(force_lbf)
   assert_eq((force_back - force_n).abs() < 1.0, true)
 
+  // Energy conversions
+  let energy_j = 1.602176634e-19  // J (1 eV)
+  let energy_ev = joule_to_ev(energy_j)
+  assert_eq((energy_ev - 1.0).abs() < 0.0001, true)
+  
+  let energy_cal = 1000.0  // cal
+  let energy_j_from_cal = cal_to_joule(energy_cal)
+  assert_eq((energy_j_from_cal - 4184.0).abs() < 0.1, true)
+  
+  let energy_btu = 1.0  // BTU
+  let energy_j_from_btu = btu_to_joule(energy_btu)
+  assert_eq((energy_j_from_btu - 1055.06).abs() < 0.1, true)
+
+  // Power conversions
+  let power_hp = 1.0  // hp
+  let power_w = hp_to_watt(power_hp)
+  assert_eq((power_w - 745.7).abs() < 0.1, true)
+  
+  let power_btu_h = 1000.0  // BTU/h
+  let power_w_from_btu = btu_per_h_to_watt(power_btu_h)
+  assert_eq((power_w_from_btu - 293.07).abs() < 0.1, true)
+
   // Temperature conversions
   let temp_c = 25.0  // Celsius
   let temp_k = celsius_to_kelvin(temp_c)
   assert_eq((temp_k - 298.15).abs() < 0.01, true)
   let temp_f = celsius_to_fahrenheit(temp_c)
   assert_eq((temp_f - 77.0).abs() < 0.1, true)
+  let temp_k_from_f = fahrenheit_to_kelvin(temp_f)
+  assert_eq((temp_k_from_f - temp_k).abs() < 0.1, true)
+
+  // Pressure conversions
+  let pressure_atm = 1.0  // atm
+  let pressure_pa = atm_to_pascal(pressure_atm)
+  assert_eq((pressure_pa - 101325.0).abs() < 0.1, true)
+  
+  let pressure_bar = 1.0  // bar
+  let pressure_pa_from_bar = bar_to_pascal(pressure_bar)
+  assert_eq((pressure_pa_from_bar - 100000.0).abs() < 0.1, true)
+  
+  let pressure_psi = 14.7  // psi
+  let pressure_pa_from_psi = psi_to_pascal(pressure_psi)
+  assert_eq((pressure_pa_from_psi - 101325.0).abs() < 100.0, true)
+}
+```
+
+---
+
+### Coordinate System Conversions
+
+```moonbit
+test "coordinate conversions" {
+  // 2D Polar to Cartesian
+  let r = 10.0
+  let theta = 3.14159 / 4.0  // 45 degrees
+  let (x, y) = polar_to_cartesian_2d(r, theta)
+  assert_eq((x - 7.071).abs() < 0.1, true)
+  assert_eq((y - 7.071).abs() < 0.1, true)
+  
+  // 2D Cartesian to Polar
+  let (r_back, theta_back) = cartesian_to_polar_2d(x, y)
+  assert_eq((r_back - r).abs() < 0.01, true)
+  
+  // 3D Spherical to Cartesian
+  let r_sphere = 10.0
+  let theta_sphere = 3.14159 / 3.0  // 60 degrees
+  let phi_sphere = 3.14159 / 4.0    // 45 degrees
+  let (x3, y3, z3) = spherical_to_cartesian_3d(r_sphere, theta_sphere, phi_sphere)
+  assert_eq(x3 > 0.0, true)
+  assert_eq(y3 > 0.0, true)
+  assert_eq(z3 > 0.0, true)
+  
+  // 3D Cartesian to Spherical
+  let (r_back3, theta_back3, phi_back3) = cartesian_to_spherical_3d(x3, y3, z3)
+  assert_eq((r_back3 - r_sphere).abs() < 0.01, true)
+  
+  // 3D Cylindrical to Cartesian
+  let rho = 10.0
+  let phi_cyl = 3.14159 / 3.0  // 60 degrees
+  let z_cyl = 5.0
+  let (x_cyl, y_cyl, z_cyl_out) = cylindrical_to_cartesian_3d(rho, phi_cyl, z_cyl)
+  assert_eq((z_cyl_out - z_cyl).abs() < 0.01, true)
+  
+  // 3D Cartesian to Cylindrical
+  let (rho_back, phi_back, z_back) = cartesian_to_cylindrical_3d(x_cyl, y_cyl, z_cyl_out)
+  assert_eq((rho_back - rho).abs() < 0.01, true)
+  assert_eq((z_back - z_cyl).abs() < 0.01, true)
+}
+```
+
+---
+
+### Dimensional Analysis and Validation
+
+```moonbit
+test "dimensional analysis" {
+  // Dimensional checks
+  let velocity = dimensional_check_velocity(100.0, 10.0)  // 100 m / 10 s
+  assert_eq(velocity, 10.0)
+  
+  let acceleration = dimensional_check_acceleration(50.0, 5.0)  // 50 m / (5 s)²
+  assert_eq(acceleration, 2.0)
+  
+  let force = dimensional_check_force(10.0, 2.0)  // 10 kg * 2 m/s²
+  assert_eq(force, 20.0)
+  
+  let energy = dimensional_check_energy(100.0, 5.0)  // 100 N * 5 m
+  assert_eq(energy, 500.0)
+  
+  let power = dimensional_check_power(1000.0, 10.0)  // 1000 J / 10 s
+  assert_eq(power, 100.0)
+  
+  let pressure = dimensional_check_pressure(1000.0, 2.0)  // 1000 N / 2 m²
+  assert_eq(pressure, 500.0)
+  
+  // Physical range validation
+  let is_valid = validate_physical_range(50.0, 0.0, 100.0)
+  assert_eq(is_valid, true)
+  
+  let is_invalid = validate_physical_range(150.0, 0.0, 100.0)
+  assert_eq(is_invalid, false)
+  
+  // Non-relativistic check
+  let c = 299792458.0  // m/s (speed of light)
+  let v_slow = 100.0  // m/s
+  let is_non_rel = is_non_relativistic(v_slow, c, 0.1)  // threshold = 10% of c
+  assert_eq(is_non_rel, true)
+  
+  let v_fast = 0.5 * c  // 50% of speed of light
+  let is_rel = is_non_relativistic(v_fast, c, 0.1)
+  assert_eq(is_rel, false)
 }
 ```
 
@@ -438,6 +575,8 @@ moon test
 * Fluid mechanics (buoyancy, Bernoulli's principle, continuity equation)
 * Wave mechanics (wave properties, Doppler effect, standing waves)
 * Vector operations and unit conversions
+* Coordinate system transformations (polar, spherical, cylindrical)
+* Dimensional analysis and physical validation
 * Boundary conditions and edge cases
 * Conservation law verification
 
@@ -507,13 +646,7 @@ The current version implements approximately **300+ classical mechanics function
 * Lagrangian and Hamiltonian mechanics
 * Extended features (relativity, continuum mechanics, acoustics)
 * Physical constants and material properties
-* Utility functions (vectors, unit conversions, numerical tools)
+* Utility functions (vectors, unit conversions, coordinate transformations, dimensional analysis, numerical tools)
 
 The library is actively developed and aims to provide comprehensive coverage of classical mechanics while being optimized for MoonBit.
-
----
-
-## License
-
-[Specify your license here]
 
